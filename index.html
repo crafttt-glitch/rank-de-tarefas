@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#3b82f6">
+    <title>Rank de Prioridade</title>
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f8fafc; --text-main: #0f172a; --text-muted: #64748b;
+            --border-color: #e2e8f0; --primary: #3b82f6; --primary-hover: #2563eb;
+            --success: #10b981; --danger: #ef4444; --purple: #8b5cf6;
+            --lvl1-bg: #fef2f2; --lvl1-border: #fca5a5; --lvl1-text: #b91c1c;
+            --lvl2-bg: #fff7ed; --lvl2-border: #fdba74; --lvl2-text: #c2410c;
+            --lvl3-bg: #f0fdf4; --lvl3-border: #86efac; --lvl3-text: #15803d;
+            --lvl4-bg: #f8fafc; --lvl4-border: #cbd5e1; --lvl4-text: #475569;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 15px; }
+        .container { max-width: 850px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header h1 { font-size: 1.5rem; margin: 0; display: flex; align-items: center; gap: 8px; }
+        .action-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; background: #fff; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .btn { font-family: inherit; font-weight: 600; font-size: 0.85rem; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-outline { background: #fff; color: var(--text-main); border: 1px solid var(--border-color); }
+        .btn-outline:hover { background: #f1f5f9; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-danger-outline { background: transparent; color: var(--danger); border: 1px solid var(--danger); margin-left: auto; }
+        .btn-danger-outline:hover { background: #fef2f2; }
+        .panel { background: #fff; border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: none; }
+        .panel.active { display: block; animation: slideDown 0.3s ease-out forwards; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .panel-header h3 { margin: 0; font-size: 1.1rem; }
+        .btn-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); }
+        .grid-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 10px; }
+        .grid-row.first { grid-template-columns: 2fr 1fr 1fr; }
+        input, select, textarea { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; background-color: #f8fafc; font-family: inherit; font-size: 0.9rem; box-sizing: border-box; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background: #fff; }
+        textarea { height: 80px; resize: vertical; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; padding: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; }
+        .level-header { font-size: 0.95rem; font-weight: 700; margin: 24px 0 10px 0; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+        .task-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; margin-bottom: 8px; border-radius: 10px; background: #fff; border: 1px solid var(--border-color); border-left-width: 4px; transition: transform 0.1s; }
+        .task-item:hover { transform: translateX(2px); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .score-circle { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
+        .task-info { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; }
+        .task-info strong { font-size: 0.95rem; line-height: 1.2; }
+        .task-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; background-color: #f1f5f9; color: var(--text-muted); border: 1px solid #e2e8f0; }
+        .badge.fixed { background-color: #fdf2f8; color: #db2777; border-color: #fbcfe8; }
+        .btn-delete { background: transparent; color: var(--border-color); border: none; cursor: pointer; padding: 5px; border-radius: 4px; transition: 0.2s; }
+        .task-item:hover .btn-delete { color: var(--danger); background: #fef2f2; }
+        .nivel-1 { border-left-color: var(--lvl1-border); }
+        .nivel-1 .score-circle { background-color: var(--lvl1-bg); color: var(--lvl1-text); border: 1px solid var(--lvl1-border); }
+        .text-nivel-1 { color: var(--lvl1-text); }
+        .nivel-2 { border-left-color: var(--lvl2-border); }
+        .nivel-2 .score-circle { background-color: var(--lvl2-bg); color: var(--lvl2-text); border: 1px solid var(--lvl2-border); }
+        .text-nivel-2 { color: var(--lvl2-text); }
+        .nivel-3 { border-left-color: var(--lvl3-border); }
+        .nivel-3 .score-circle { background-color: var(--lvl3-bg); color: var(--lvl3-text); border: 1px solid var(--lvl3-border); }
+        .text-nivel-3 { color: var(--lvl3-text); }
+        .nivel-4 { border-left-color: var(--lvl4-border); }
+        .nivel-4 .score-circle { background-color: var(--lvl4-bg); color: var(--lvl4-text); border: 1px solid var(--lvl4-border); }
+        .text-nivel-4 { color: var(--lvl4-text); }
+        @media (max-width: 600px) { .grid-row.first { grid-template-columns: 1fr; } .action-bar { justify-content: space-between; } .btn-danger-outline { margin-left: 0; width: 100%; justify-content: center;} }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🥇 Rank de Prioridade</h1>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn btn-primary" onclick="togglePanel('panelAdd')">➕ Nova Tarefa</button>
+        <button class="btn btn-outline" onclick="togglePanel('panelImport')">📥 Importar Lista</button>
+        <button id="btnOrdenar" class="btn btn-outline" onclick="toggleOrdenacao()" style="background-color: var(--purple); color: white; border-color: var(--purple);">🔄 Ordem: Maior Score</button>
+        <button class="btn btn-danger-outline" onclick="limparTudo()">🗑️ Limpar Tudo</button>
+    </div>
+
+    <div id="panelAdd" class="panel">
+        <div class="panel-header">
+            <h3>Adicionar Tarefa</h3>
+            <button class="btn-close" onclick="togglePanel('panelAdd')">✖</button>
+        </div>
+        <div class="grid-row first">
+            <input type="text" id="nome" placeholder="O que você precisa fazer?">
+            <select id="dia">
+                <option value="segunda">Segunda</option>
+                <option value="terça">Terça</option>
+                <option value="quarta">Quarta</option>
+                <option value="quinta">Quinta</option>
+                <option value="sexta">Sexta</option>
+                <option value="sábado">Sábado</option>
+                <option value="domingo">Domingo</option>
+                <option value="sem prazo">Sem Prazo</option>
+            </select>
+            <select id="turno">
+                <option value="manhã">Manhã</option>
+                <option value="tarde">Tarde</option>
+                <option value="noite">Noite</option>
+            </select>
+        </div>
+        <div class="grid-row">
+            <input type="number" id="complexidade" placeholder="Complexidade (3-9)" min="3" max="9">
+            <input type="number" id="is" placeholder="Importância (3-9)" min="3" max="9">
+            <input type="number" id="pe" placeholder="Estresse (0-10)" min="0" max="10">
+            <label class="checkbox-group"><input type="checkbox" id="eventoFixo"> Fixo</label>
+        </div>
+        <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;" onclick="adicionarTarefaUnica()">Salvar Tarefa</button>
+    </div>
+
+    <div id="panelImport" class="panel">
+        <div class="panel-header">
+            <h3>Importação Rápida</h3>
+            <button class="btn-close" onclick="togglePanel('panelImport')">✖</button>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Formato: Nome | Dia Turno | C | IS | PE | sim/nao</p>
+        <textarea id="bulkText" placeholder="Ex: GIESC | Quarta Manhã | alto | alto | 10 | sim"></textarea>
+        <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px; background-color: var(--success);" onclick="importarLote()">Processar Texto</button>
+    </div>
+
+    <div id="taskList"></div>
+</div>
+
+<script>
+    let tarefas = JSON.parse(localStorage.getItem('minhasTarefas')) || [];
+    let ordenarPorComplexidade = false;
+
+    function togglePanel(panelId) {
+        let paineis = ['panelAdd', 'panelImport'];
+        paineis.forEach(id => {
+            let p = document.getElementById(id);
+            if (id === panelId) p.classList.toggle('active');
+            else p.classList.remove('active');
+        });
+    }
+
+    function parsePrazo(texto) {
+        let t = texto.toLowerCase().trim();
+        if (t.includes("sem prazo")) return 0;
+        let targetDay = -1;
+        if (t.includes("domingo")) targetDay = 0;
+        if (t.includes("segunda")) targetDay = 1;
+        if (t.includes("terça") || t.includes("terca")) targetDay = 2;
+        if (t.includes("quarta")) targetDay = 3;
+        if (t.includes("quinta")) targetDay = 4;
+        if (t.includes("sexta")) targetDay = 5;
+        if (t.includes("sábado") || t.includes("sabado")) targetDay = 6;
+        if (targetDay === -1) return 0;
+
+        let hoje = new Date().getDay();
+        let diff = targetDay - hoje;
+        if (diff < 0) diff += 7;
+
+        let baseP = Math.max(0.5, 3.5 - (diff * 0.5));
+        if (t.includes("manh")) baseP += 0.3;
+        if (t.includes("tarde")) baseP += 0.1;
+        return parseFloat(baseP.toFixed(2));
+    }
+
+    function parseEscala(texto) {
+        let palavras = texto.toLowerCase().trim().split(/\s+/);
+        let soma = 0; let count = 0;
+        palavras.forEach(p => {
+            if (p === "baixo") { soma += 1; count++; }
+            else if (p === "médio" || p === "medio") { soma += 2; count++; }
+            else if (p === "alto") { soma += 3; count++; }
+        });
+        while (count < 3) { soma += 2; count++; }
+        return Math.min(Math.max(soma, 3), 9);
+    }
+
+    function parsePE(texto) {
+        let t = texto.trim();
+        if (t === "-" || t === "") return 0;
+        return parseFloat(t) || 0;
+    }
+
+    function calcularScore(t, prazoCalc) {
+        let base = (t.is * (1 + prazoCalc/3)) + (t.pe * (1 + prazoCalc/3)) + (prazoCalc * t.complexidade);
+        if (t.eventoFixo) base += (5 + (t.pe / 2));
+        if (t.complexidade >= 7 && prazoCalc >= 3) base += (2 * t.complexidade);
+        if (prazoCalc >= 3) base *= 1.1;
+        if (prazoCalc === 0) base *= 0.6;
+        return base;
+    }
+
+    function toggleOrdenacao() {
+        ordenarPorComplexidade = !ordenarPorComplexidade;
+        let btn = document.getElementById("btnOrdenar");
+        if(ordenarPorComplexidade) {
+            btn.innerHTML = `🟢 Ordem: Mais Fáceis Primeiro`;
+            btn.style.backgroundColor = "var(--success)"; 
+            btn.style.borderColor = "var(--success)";
+        } else {
+            btn.innerHTML = `🔄 Ordem: Maior Score`;
+            btn.style.backgroundColor = "var(--purple)";
+            btn.style.borderColor = "var(--purple)";
+        }
+        salvarERenderizar();
+    }
+
+    function salvarERenderizar() {
+        localStorage.setItem('minhasTarefas', JSON.stringify(tarefas));
+        const lista = document.getElementById("taskList");
+        lista.innerHTML = "";
+        
+        if (tarefas.length === 0) {
+            lista.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted); border: 2px dashed var(--border-color); border-radius: 12px; margin-top: 20px;">Campo de batalha limpo. Nenhuma tarefa ativa.</div>`;
+            return;
+        }
+
+        tarefas.forEach(t => {
+            t.prazoAtualizado = parsePrazo(t.prazoOrig);
+            t.score = calcularScore(t, t.prazoAtualizado);
+        });
+
+        let niveis = {
+            "nivel-1": { nome: "Sobrevivência", icon: "🔥", itens: [] },
+            "nivel-2": { nome: "Compromissos", icon: "⚠️", itens: [] },
+            "nivel-3": { nome: "No Radar", icon: "👀", itens: [] },
+            "nivel-4": { nome: "Em Espera", icon: "☕", itens: [] }
+        };
+
+        tarefas.forEach(t => {
+            if (t.score >= 50) niveis["nivel-1"].itens.push(t);
+            else if (t.score >= 20) niveis["nivel-2"].itens.push(t);
+            else if (t.score >= 5) niveis["nivel-3"].itens.push(t);
+            else niveis["nivel-4"].itens.push(t);
+        });
+
+        for (let chave in niveis) {
+            niveis[chave].itens.sort((a, b) => {
+                if (ordenarPorComplexidade && a.complexidade !== b.complexidade) return a.complexidade - b.complexidade; 
+                return b.score - a.score;
+            });
+        }
+
+        let htmlFinal = "";
+        for (let chave in niveis) {
+            if (niveis[chave].itens.length > 0) {
+                htmlFinal += `<div class="level-header text-${chave}">${niveis[chave].icon} ${niveis[chave].nome}</div>`;
+                niveis[chave].itens.forEach(t => {
+                    let indexOriginal = tarefas.indexOf(t);
+                    let badgeFixo = t.eventoFixo ? `<span class="badge fixed">Fixo</span>` : '';
+                    
+                    htmlFinal += `
+                        <div class="task-item ${chave}">
+                            <div class="score-circle" title="Score Final">${Math.round(t.score)}</div>
+                            <div class="task-info">
+                                <strong>${t.nome}</strong>
+                                <div class="task-meta">
+                                    <span class="badge" title="Distância P: ${t.prazoAtualizado}">⏰ ${t.prazoOrig}</span>
+                                    <span class="badge">C: ${t.complexidade}</span>
+                                    <span class="badge">IS: ${t.is}</span>
+                                    <span class="badge">PE: ${t.pe}</span>
+                                    ${badgeFixo}
+                                </div>
+                            </div>
+                            <button class="btn-delete" onclick="removerTarefa(${indexOriginal})" title="Remover tarefa">✖</button>
+                        </div>
+                    `;
+                });
+            }
+        }
+        lista.innerHTML = htmlFinal;
+    }
+
+    function adicionarTarefaUnica() {
+        let nome = document.getElementById("nome").value;
+        let dia = document.getElementById("dia").value;
+        let turno = document.getElementById("turno").value;
+        let prazoOrig = dia === "sem prazo" ? "sem prazo" : `${dia} ${turno}`;
+        let c = parseFloat(document.getElementById("complexidade").value) || 6;
+        let is = parseFloat(document.getElementById("is").value) || 6;
+        let pe = parseFloat(document.getElementById("pe").value) || 0;
+        let evento = document.getElementById("eventoFixo").checked;
+
+        if (!nome) return;
+        tarefas.push({ nome, prazoOrig, complexidade: c, is, pe, eventoFixo: evento });
+        document.getElementById("nome").value = ""; 
+        togglePanel('panelAdd'); 
+        salvarERenderizar();
+    }
+
+    function importarLote() {
+        let texto = document.getElementById("bulkText").value;
+        let linhas = texto.split('\n');
+        linhas.forEach(linha => {
+            if (linha.trim() === "") return;
+            let partes = linha.split('|').map(p => p.trim());
+            if (partes.length >= 6) {
+                let nome = partes[0];
+                let prazoOrig = partes[1];
+                let c = parseEscala(partes[2]);
+                let is = parseEscala(partes[3]);
+                let pe = parsePE(partes[4]);
+                let evento = partes[5].toLowerCase() === "sim" || partes[5].toLowerCase() === "fixo";
+                tarefas.push({ nome, prazoOrig, complexidade: c, is, pe, eventoFixo: evento });
+            }
+        });
+        document.getElementById("bulkText").value = "";
+        togglePanel('panelImport'); 
+        salvarERenderizar();
+    }
+
+    function removerTarefa(index) {
+        tarefas.splice(index, 1);
+        salvarERenderizar();
+    }
+
+    function limparTudo() {
+        if(confirm("Tem certeza que deseja apagar todas as tarefas?")) {
+            tarefas = [];
+            salvarERenderizar();
+        }
+    }
+
+    window.onload = salvarERenderizar;
+
+    // --- ATIVAÇÃO DO MODO OFFLINE (PWA) ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            // Aponta corretamente para o sw.js
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Offline ativado!', reg.scope))
+                .catch(err => console.log('Erro no offline', err));
+        });
+    }
+</script>
+</body>
+</html>
