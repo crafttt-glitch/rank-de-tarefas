@@ -55,17 +55,18 @@
         .task-item { display: flex; align-items: center; gap: 16px; padding: 16px; margin-bottom: 12px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--border-color); border-left-width: 5px; transition: all 0.2s; }
         .task-item:hover { transform: scale(1.01); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
-        /* Substituiu o Score pelo Posicionamento do Ranking */
         .score-circle { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
         
-        .task-info { flex-grow: 1; }
+        .task-info { flex-grow: 1; width: 100%; }
         .task-info strong { font-size: 1.05rem; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
         
-        /* Novas Barras de Status Percentuais */
-        .stats-container { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
-        .stat-box { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); }
-        .stat-bar { width: 40px; height: 6px; background-color: var(--border-color); border-radius: 4px; overflow: hidden; display: inline-block; }
+        /* Modificações do Grid de Status e Legendas */
+        .stats-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 10px; }
+        .stat-box { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); background: var(--input-bg); padding: 5px 8px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .stat-label { display: flex; align-items: center; gap: 4px; width: 75px; flex-shrink: 0; }
+        .stat-bar { flex-grow: 1; height: 6px; background-color: var(--border-color); border-radius: 4px; overflow: hidden; display: block; }
         .stat-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+        .stat-percent { width: 32px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
         
         .badge.fixed { padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; background-color: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); }
         
@@ -84,7 +85,11 @@
         .grid-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 12px; }
         .grid-row.first { grid-template-columns: 2fr 1fr 1fr; }
         
-        @media (max-width: 600px) { .grid-row.first { grid-template-columns: 1fr; } .btn-danger-outline { margin-left: 0; width: 100%; justify-content: center; } }
+        @media (max-width: 600px) { 
+            .grid-row.first { grid-template-columns: 1fr; } 
+            .btn-danger-outline { margin-left: 0; width: 100%; justify-content: center; } 
+            .stats-container { grid-template-columns: 1fr; } /* Coloca uma barra embaixo da outra no celular */
+        }
     </style>
 </head>
 <body class="dark-mode">
@@ -211,7 +216,7 @@
         for (let chave in niveis) { niveis[chave].itens.sort((a, b) => { if (ordenarPorComplexidade && a.complexidade !== b.complexidade) return a.complexidade - b.complexidade; return b.score - a.score; }); }
 
         let htmlFinal = "";
-        let globalRank = 1; // Contador global do Rank
+        let globalRank = 1;
 
         for (let chave in niveis) {
             if (niveis[chave].itens.length > 0) {
@@ -220,12 +225,12 @@
                     let indexOriginal = tarefas.indexOf(t);
                     let badgeFixo = t.eventoFixo ? `<span class="badge fixed">📌 Fixo</span>` : '';
                     
-                    // Conversão das escalas originais para Porcentagem (0% a 100%)
-                    let percP = Math.min(100, Math.max(0, Math.round((t.prazoAtualizado / 3.8) * 100))); // Prazo Máx: ~3.8
-                    let percC = Math.round((t.complexidade / 9) * 100); // Comp. Máx: 9
-                    let percIS = Math.round((t.is / 9) * 100); // Imp. Máx: 9
-                    let percPE = Math.round((t.pe / 10) * 100); // Estresse Máx: 10
+                    let percP = Math.min(100, Math.max(0, Math.round((t.prazoAtualizado / 3.8) * 100))); 
+                    let percC = Math.round((t.complexidade / 9) * 100); 
+                    let percIS = Math.round((t.is / 9) * 100); 
+                    let percPE = Math.round((t.pe / 10) * 100); 
 
+                    // Alterado aqui: Adicionada a legenda clara ao lado do emoji e uma barra fluida
                     htmlFinal += `
                         <div class="task-item ${chave}">
                             <div class="score-circle" title="Posição no Rank">#${globalRank}</div>
@@ -233,23 +238,31 @@
                                 <strong>${t.nome} ${badgeFixo}</strong>
                                 <div class="stats-container">
                                     <div class="stat-box" title="Prazo Original: ${t.prazoOrig}">
-                                        ⏰ <div class="stat-bar"><div class="stat-fill" style="width:${percP}%; background:var(--primary)"></div></div> ${percP}%
+                                        <span class="stat-label">⏰ Prazo</span>
+                                        <div class="stat-bar"><div class="stat-fill" style="width:${percP}%; background:var(--primary)"></div></div>
+                                        <span class="stat-percent">${percP}%</span>
                                     </div>
-                                    <div class="stat-box" title="Complexidade (escala até 9)">
-                                        ⚙️ <div class="stat-bar"><div class="stat-fill" style="width:${percC}%; background:var(--purple)"></div></div> ${percC}%
+                                    <div class="stat-box" title="Nível de Dificuldade">
+                                        <span class="stat-label">⚙️ Compl.</span>
+                                        <div class="stat-bar"><div class="stat-fill" style="width:${percC}%; background:var(--purple)"></div></div>
+                                        <span class="stat-percent">${percC}%</span>
                                     </div>
-                                    <div class="stat-box" title="Importância Subjetiva (escala até 9)">
-                                        🎯 <div class="stat-bar"><div class="stat-fill" style="width:${percIS}%; background:var(--success)"></div></div> ${percIS}%
+                                    <div class="stat-box" title="Importância Subjetiva">
+                                        <span class="stat-label">🎯 Import.</span>
+                                        <div class="stat-bar"><div class="stat-fill" style="width:${percIS}%; background:var(--success)"></div></div>
+                                        <span class="stat-percent">${percIS}%</span>
                                     </div>
-                                    <div class="stat-box" title="Estresse (escala até 10)">
-                                        ⚡ <div class="stat-bar"><div class="stat-fill" style="width:${percPE}%; background:var(--danger)"></div></div> ${percPE}%
+                                    <div class="stat-box" title="Pontos de Estresse (Ansiedade)">
+                                        <span class="stat-label">⚡ Estresse</span>
+                                        <div class="stat-bar"><div class="stat-fill" style="width:${percPE}%; background:var(--danger)"></div></div>
+                                        <span class="stat-percent">${percPE}%</span>
                                     </div>
                                 </div>
                             </div>
                             <button class="btn-delete" onclick="removerTarefa(${indexOriginal})" title="Remover tarefa">✖</button>
                         </div>
                     `;
-                    globalRank++; // Sobe a posição para a próxima tarefa
+                    globalRank++;
                 });
             }
         }
