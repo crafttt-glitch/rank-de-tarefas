@@ -1,0 +1,16 @@
+{
+  "name": "Rank de Prioridade",
+  "short_name": "Rank",
+  "description": "Seu organizador de batalhas diárias",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f947.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
