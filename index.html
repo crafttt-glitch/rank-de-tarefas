@@ -48,18 +48,26 @@
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; background-color: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem; box-sizing: border-box; }
-        input:focus { border-color: var(--primary); outline: none; ring: 2px var(--primary); }
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
 
         .level-header { font-size: 0.85rem; font-weight: 800; margin: 30px 0 12px 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; opacity: 0.8; }
         
-        .task-item { display: flex; align-items: center; gap: 14px; padding: 14px; margin-bottom: 10px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--border-color); border-left-width: 5px; transition: all 0.2s; }
+        .task-item { display: flex; align-items: center; gap: 16px; padding: 16px; margin-bottom: 12px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--border-color); border-left-width: 5px; transition: all 0.2s; }
         .task-item:hover { transform: scale(1.01); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
-        .score-circle { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        /* Substituiu o Score pelo Posicionamento do Ranking */
+        .score-circle { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
         
         .task-info { flex-grow: 1; }
-        .task-info strong { font-size: 1rem; display: block; margin-bottom: 4px; }
-        .badge { padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background-color: var(--input-bg); color: var(--text-muted); border: 1px solid var(--border-color); margin-right: 4px; }
+        .task-info strong { font-size: 1.05rem; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        
+        /* Novas Barras de Status Percentuais */
+        .stats-container { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+        .stat-box { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); }
+        .stat-bar { width: 40px; height: 6px; background-color: var(--border-color); border-radius: 4px; overflow: hidden; display: inline-block; }
+        .stat-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+        
+        .badge.fixed { padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; background-color: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); }
         
         .btn-delete { background: transparent; color: var(--text-muted); border: none; cursor: pointer; padding: 8px; border-radius: 8px; }
         .btn-delete:hover { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
@@ -203,12 +211,45 @@
         for (let chave in niveis) { niveis[chave].itens.sort((a, b) => { if (ordenarPorComplexidade && a.complexidade !== b.complexidade) return a.complexidade - b.complexidade; return b.score - a.score; }); }
 
         let htmlFinal = "";
+        let globalRank = 1; // Contador global do Rank
+
         for (let chave in niveis) {
             if (niveis[chave].itens.length > 0) {
                 htmlFinal += `<div class="level-header text-${chave}">${niveis[chave].icon} ${niveis[chave].nome}</div>`;
                 niveis[chave].itens.forEach(t => {
                     let indexOriginal = tarefas.indexOf(t);
-                    htmlFinal += `<div class="task-item ${chave}"><div class="score-circle">${Math.round(t.score)}</div><div class="task-info"><strong>${t.nome}</strong><div class="task-meta"><span class="badge">⏰ ${t.prazoOrig}</span><span class="badge">C: ${t.complexidade}</span><span class="badge">IS: ${t.is}</span><span class="badge">PE: ${t.pe}</span>${t.eventoFixo ? '<span class="badge" style="color:#ef4444;border-color:#ef4444">Fixo</span>' : ''}</div></div><button class="btn-delete" onclick="removerTarefa(${indexOriginal})">✖</button></div>`;
+                    let badgeFixo = t.eventoFixo ? `<span class="badge fixed">📌 Fixo</span>` : '';
+                    
+                    // Conversão das escalas originais para Porcentagem (0% a 100%)
+                    let percP = Math.min(100, Math.max(0, Math.round((t.prazoAtualizado / 3.8) * 100))); // Prazo Máx: ~3.8
+                    let percC = Math.round((t.complexidade / 9) * 100); // Comp. Máx: 9
+                    let percIS = Math.round((t.is / 9) * 100); // Imp. Máx: 9
+                    let percPE = Math.round((t.pe / 10) * 100); // Estresse Máx: 10
+
+                    htmlFinal += `
+                        <div class="task-item ${chave}">
+                            <div class="score-circle" title="Posição no Rank">#${globalRank}</div>
+                            <div class="task-info">
+                                <strong>${t.nome} ${badgeFixo}</strong>
+                                <div class="stats-container">
+                                    <div class="stat-box" title="Prazo Original: ${t.prazoOrig}">
+                                        ⏰ <div class="stat-bar"><div class="stat-fill" style="width:${percP}%; background:var(--primary)"></div></div> ${percP}%
+                                    </div>
+                                    <div class="stat-box" title="Complexidade (escala até 9)">
+                                        ⚙️ <div class="stat-bar"><div class="stat-fill" style="width:${percC}%; background:var(--purple)"></div></div> ${percC}%
+                                    </div>
+                                    <div class="stat-box" title="Importância Subjetiva (escala até 9)">
+                                        🎯 <div class="stat-bar"><div class="stat-fill" style="width:${percIS}%; background:var(--success)"></div></div> ${percIS}%
+                                    </div>
+                                    <div class="stat-box" title="Estresse (escala até 10)">
+                                        ⚡ <div class="stat-bar"><div class="stat-fill" style="width:${percPE}%; background:var(--danger)"></div></div> ${percPE}%
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-delete" onclick="removerTarefa(${indexOriginal})" title="Remover tarefa">✖</button>
+                        </div>
+                    `;
+                    globalRank++; // Sobe a posição para a próxima tarefa
                 });
             }
         }
@@ -223,7 +264,6 @@
 
     window.onload = () => { aplicarTema(); atualizarBotaoOrdem(); salvarERenderizar(); };
 
-    // --- ATUALIZAÇÃO AUTOMÁTICA DO SERVICE WORKER ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js').then(reg => {
@@ -231,7 +271,6 @@
                     const installingWorker = reg.installing;
                     installingWorker.onstatechange = () => {
                         if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            // Nova versão encontrada, recarrega a página automaticamente
                             window.location.reload();
                         }
                     };
