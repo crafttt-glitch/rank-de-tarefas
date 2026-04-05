@@ -346,7 +346,7 @@
     function fecharModalClick() { document.getElementById('aiModal').classList.remove('active'); }
 
     // --- LOGICA IA TURBINADA ---
-   async function analisarIA(index, event) {
+  async function analisarIA(index, event) {
         if (!apiKey) {
             alert("⚠️ Configure sua API Key da Groq no botão 🤖.");
             togglePanel('panelConfig');
@@ -359,23 +359,21 @@
         const modal = document.getElementById('aiModal');
         const content = document.getElementById('aiContent');
         modal.classList.add('active');
-        content.innerHTML = '<div class="loader"></div><p style="text-align:center; color:var(--text-muted);">O estrategista está lendo seu caos...</p>';
+        content.innerHTML = '<div class="loader"></div><p style="text-align:center; color:var(--text-muted);">Consultando o oráculo...</p>';
 
+        // Prompt ajustado para ter personalidade e análise real
         const promptText = `
-        ANALISE ESTA MISSÃO:
-        - Nome da Tarefa: "${t.nome}"
-        - Prazo/Urgência (0 a 3.8): ${t.prazoAtualizado} (${t.prazoOrig})
-        - Complexidade (Dificuldade de 3 a 9): ${t.complexidade}
-        - Importância (Valor de 3 a 9): ${t.is}
-        - Estresse (Ansiedade de 0 a 10): ${t.pe}
-        - Score do Ranking: ${t.score.toFixed(1)}
-        - É compromisso fixo? ${t.eventoFixo ? 'Sim' : 'Não'}
+        Analise esta tarefa da minha lista:
+        - Nome: ${t.nome}
+        - Prazo/Urgência: ${t.prazoAtualizado} (Perto de 3.8 é pra ontem, perto de 0 é relax)
+        - Complexidade: ${t.complexidade}/9
+        - Estresse (PE): ${t.pe}/10
+        - Score do Algoritmo: ${t.score.toFixed(1)}
 
-        INSTRUÇÕES DE PERSONALIDADE:
-        Você é um mentor de produtividade sarcástico, "papo reto" e muito inteligente. 
-        Analise se o Estresse (PE) condiz com a Complexidade. Se o cara deu estresse 10 pra algo fácil (C=3), zoe ele. Se a tarefa é um monstro (C=9) e o prazo tá em cima, dê o alerta real.
-        Use gírias brasileiras naturais (ex: "mamão com mel", "trampo", "zica", "vapo", "tá moscando", "embaçado"). vale destacar que dificilmente uma tarefa vai ter niveis bem baixos em algo, veja se so esta abaixo do normal, pra ver se ta facil, media ou dificil mesmo.
-        Mantenha em no máximo 3 frases curtas. Seja analítico, mas engraçado/simplista.
+        Regras: 
+        1. Seja direto, simplista e engraçado (estilo brasileiro, pode usar "kkkk", "mamão com mel", "o bicho vai pegar").
+        2. Analise os números: se Complexidade e Estresse forem baixos, mande fazer logo. Se forem altos, reconheça que vai dar trabalho.
+        3. Máximo 3 frases curtas. Use negrito no que for tático. Fale em segunda pessoa.
         `;
 
         try {
@@ -390,11 +388,11 @@
                     messages: [
                         { 
                             role: "system", 
-                            content: "Você é um estrategista de guerra da produtividade. Seu tom é informal, sarcástico e focado em resultados. Você não enrola e fala a verdade na cara do usuário usando gírias brasileiras." 
+                            content: "Você é um assistente de produtividade sincero, engraçado e sem paciência para enrolação. Você analisa os dados técnicos (complexidade, estresse e prazo) e dá um feedback real sobre a dificuldade da tarefa, usando gírias leves e humor." 
                         },
                         { role: "user", content: promptText }
                     ],
-                    temperature: 0.8 // Aumentei um pouco para dar mais criatividade na zoeira
+                    temperature: 0.8 // Aumentado para dar mais "vida" e variação na fala
                 })
             });
 
