@@ -340,7 +340,7 @@
 
 async function analisarIA(index, event) {
         if (!apiKey) {
-            alert("⚠️ Por favor, configure sua nova API Key da Groq (gsk_...) no botão 🤖.");
+            alert("⚠️ Configure sua API Key da Groq primeiro.");
             togglePanel('panelConfig');
             return;
         }
@@ -348,39 +348,51 @@ async function analisarIA(index, event) {
         const t = tarefas[index];
         if (t.feito) return; 
 
+        // Descobrir em qual nível a tarefa está para passar para a IA
+        const score = t.score;
+        let nivelNome = "Em Espera";
+        if (score >= 50) nivelNome = "SOBREVIVÊNCIA (CRÍTICO)";
+        else if (score >= 20) nivelNome = "COMPROMISSO PESADO";
+        else if (score >= 5) nivelNome = "NO RADAR";
+
         const modal = document.getElementById('aiModal');
         const content = document.getElementById('aiContent');
         modal.classList.add('active');
-        content.innerHTML = '<div class="loader"></div><p style="text-align:center; color:var(--text-muted);">A Groq está traçando sua estratégia...</p>';
+        content.innerHTML = '<div class="loader"></div><p style="text-align:center; color:var(--text-muted);">Decifrando prioridades...</p>';
 
+        // PROMPT TURBINADO COM PERSONALIDADE
         const promptText = `
-        Você é um assistente tático de produtividade direto e realista. Analise esta tarefa:
-        - Nome: ${t.nome}
-        - Urgência/Prazo (0 a 3.8): ${t.prazoAtualizado} (${t.prazoOrig})
-        - Complexidade (3 a 9): ${t.complexidade}
-        - Importância (3 a 9): ${t.is}
-        - Estresse (0 a 10): ${t.pe}
-        - Score Final: ${t.score.toFixed(1)}
-        - Fixo: ${t.eventoFixo ? 'Sim' : 'Não'}
+        ANÁLISE DE MISSÃO:
+        - TAREFA: "${t.nome}"
+        - STATUS: Nível de ${nivelNome} (Score: ${t.score.toFixed(1)})
+        - DADOS: Complexidade ${t.complexidade}/9, Importância ${t.is}/9, Estresse ${t.pe}/10, Prazo: ${t.prazoOrig}.
 
-        Dê um conselho tático em no máximo 3 frases. Diga se é fácil/difícil, se deve atacar agora ou postergar, e uma dica rápida. Use negrito no que for crucial. Fale em segunda pessoa.
+        INSTRUÇÕES:
+        Aja como um estrategista militar de produtividade. Não seja genérico. 
+        1. Analise o "conflito" entre os dados (Ex: Se a importância é alta mas o estresse é baixo, você está negligenciando algo vital. Se o estresse é alto mas a importância é baixa, você está tendo um ataque de pânico por nada).
+        2. Dê um veredito real: "Ataque agora", "Prepare o terreno" ou "Ignore por enquanto".
+        3. Diga EXATAMENTE como começar (o primeiro micro-passo).
+        
+        Seja sarcástico se necessário, mas muito tático. Máximo de 4 frases. Use negrito.
         `;
 
         try {
-            // Chamada para a API da Groq
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${apiKey}` // A chave vai aqui no cabeçalho
+                    "Authorization": `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile", // Modelo potente e gratuito
+                    model: "llama-3.3-70b-versatile",
                     messages: [
-                        { role: "system", content: "Você é um mentor de produtividade focado no método GTD e matriz de Eisenhower." },
+                        { 
+                            role: "system", 
+                            content: "Você é um comandante tático frio e ultra-eficiente. Você odeia procrastinação e respostas óbvias. Sua missão é analisar os dados matemáticos da tarefa e dar um choque de realidade no usuário." 
+                        },
                         { role: "user", content: promptText }
                     ],
-                    temperature: 0.7
+                    temperature: 0.8 // Aumentado para dar mais "vida" e personalidade à resposta
                 })
             });
 
@@ -397,7 +409,7 @@ async function analisarIA(index, event) {
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
         } catch (error) {
-            content.innerHTML = `<p style="color: var(--danger); font-weight: bold;">⚠️ Erro na Groq</p><p style="font-size: 0.85rem; color: var(--text-muted);">${error.message}</p>`;
+            content.innerHTML = `<p style="color: var(--danger); font-weight: bold;">⚠️ Erro na Estratégia</p><p style="font-size: 0.85rem; color: var(--text-muted);">${error.message}</p>`;
         }
     }
     window.onload = () => { aplicarTema(); atualizarBotaoOrdem(); salvarERenderizar(); };
