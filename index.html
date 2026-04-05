@@ -346,9 +346,9 @@
     function fecharModalClick() { document.getElementById('aiModal').classList.remove('active'); }
 
     // --- LOGICA IA TURBINADA ---
-    async function analisarIA(index, event, nivelNome) {
+    async function analisarIA(index, event) {
         if (!apiKey) {
-            alert("⚠️ Configure sua chave Groq no botão 🤖.");
+            alert("⚠️ Configure sua API Key da Groq no botão 🤖.");
             togglePanel('panelConfig');
             return;
         }
@@ -359,25 +359,20 @@
         const modal = document.getElementById('aiModal');
         const content = document.getElementById('aiContent');
         modal.classList.add('active');
-        content.innerHTML = '<div class="loader"></div>';
+        content.innerHTML = '<div class="loader"></div><p style="text-align:center; color:var(--text-muted);">Consultando o mestre tático...</p>';
 
-        // Prompt com muito mais "personalidade" e dados cruzados
+        // Pegamos o contexto do nível (Sobrevivência, Compromisso, etc)
+        const nivelTraduzido = t.score >= 50 ? "Sobrevivência (Crítico)" : t.score >= 20 ? "Compromisso Pesado" : t.score >= 5 ? "No Radar" : "Em Espera";
+
         const promptText = `
-        Você é um estrategista de produtividade elite, direto, levemente irônico e motivador. 
-        O usuário é um 'comandante' em campo de batalha. Analise a missão:
-        
-        - Missão (Nome): ${t.nome}
-        - Classificação atual: Nível de ${nivelNome} (isso indica a gravidade no rank).
-        - Dados Técnicos: Complexidade ${t.complexidade}/9, Importância ${t.is}/9, Estresse ${t.pe}/10.
-        - Urgência Temporal: ${t.prazoOrig} (Peso matemático: ${t.prazoAtualizado}).
-        - É um Evento Fixo? ${t.eventoFixo ? 'SIM, não tem como fugir.' : 'Não.'}
-
-        REGRAS DE RESPOSTA:
-        1. Comece com uma saudação tática curta (ex: 'Escuta aqui, comandante', 'Olha só o que temos...').
-        2. Analise se os números batem com o nome da tarefa. Se a complexidade for baixa, use expressões como 'mamão com mel', 'passeio no parque'. Se for alta, seja sério.
-        3. Dê uma ordem direta: Atacar agora, planejar ou ignorar por enquanto.
-        4. Use no máximo 3 frases. Seja 'afiado' e humano, nada de clichês de robô.
-        Use negrito no veredito.
+        Analise esta tarefa da minha lista:
+        - Nome: ${t.nome}
+        - Nível Atual: ${nivelTraduzido}
+        - Prazo/Urgência: ${Math.round((t.prazoAtualizado / 3.8) * 100)}% (${t.prazoOrig})
+        - Complexidade (Dificuldade): ${Math.round((t.complexidade / 9) * 100)}%
+        - Importância: ${Math.round((t.is / 9) * 100)}%
+        - Estresse (Ansiedade): ${Math.round((t.pe / 10) * 100)}%
+        - Fixo: ${t.eventoFixo ? 'Sim' : 'Não'}
         `;
 
         try {
@@ -390,14 +385,26 @@
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [
-                        { role: "system", content: "Você é um mentor tático e ágil. Não dê respostas genéricas. Use gírias de produtividade e seja muito específico sobre os dados recebidos." },
+                        { 
+                            role: "system", 
+                            content: `Você é um mentor de produtividade brasileiro, informal, sagaz e direto. 
+                            Sua missão é dar um "papo reto" sobre a tarefa. 
+                            - Se os números forem baixos, use termos como "mamão com mel", "suave", "mata logo isso".
+                            - Se o estresse e complexidade forem altos, reconheça que "o bicho vai pegar", mas dê um norte.
+                            - Seja sarcástico se o usuário estiver estressado com algo fácil, ou motivador se for um desafio real.
+                            - Use gírias leves (bora, vixe, kkk, caramba). 
+                            - Regra: No máximo 3 frases curtas e impactantes. Use negrito no que for ação.` 
+                        },
                         { role: "user", content: promptText }
                     ],
-                    temperature: 0.8 // Mais criatividade
+                    temperature: 0.8 // Aumentado para dar mais "personalidade" e variação
                 })
             });
 
-            if (!response.ok) throw new Error("Falha na Groq");
+            if (!response.ok) {
+                const erroData = await response.json();
+                throw new Error(erroData.error?.message || "Erro na Groq");
+            }
 
             const data = await response.json();
             const respostaIA = data.choices[0].message.content;
@@ -407,7 +414,7 @@
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
         } catch (error) {
-            content.innerHTML = `<p style="color: var(--danger);">⚠️ Erro: ${error.message}</p>`;
+            content.innerHTML = `<p style="color: var(--danger); font-weight: bold;">⚠️ Erro na Groq</p><p style="font-size: 0.85rem; color: var(--text-muted);">${error.message}</p>`;
         }
     }
 
