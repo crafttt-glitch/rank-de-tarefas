@@ -338,6 +338,7 @@
     function fecharModalClick() { document.getElementById('aiModal').classList.remove('active'); }
 
     // --- FUNÇÃO DE IA: AGORA CONECTADA AO GEMINI 2.0 FLASH LITE ---
+    // --- FUNÇÃO DE IA: GEMINI 2.5 FLASH COM LÓGICA DE PERCENTUAL RÍGIDA ---
     async function analisarTarefaComIA(index) {
         if (!apiKey) {
             alert("⚠️ Configure sua API Key do Gemini no botão 🤖.");
@@ -351,7 +352,7 @@
         const modal = document.getElementById('aiModal');
         const content = document.getElementById('aiContent');
         modal.classList.add('active');
-        content.innerHTML = '<div class="loader"></div><p style="text-align:center; color:var(--text-muted);">O Gemini está analisando a tática...</p>';
+        content.innerHTML = '<div class="loader"></div><p style="text-align:center; color:var(--text-muted);">O mestre está conferindo os números...</p>';
 
         const MAX_PRAZO = 3.8;
         const MAX_COMPLEXIDADE = 9;
@@ -364,78 +365,66 @@
         const pePerc = Math.round((t.pe / MAX_ESTRESSE) * 100); 
         
         let nivelNome = "";
-        if (t.score >= 50) nivelNome = "Nível 1 - Sobrevivência (Crítico)";
+        if (t.score >= 50) nivelNome = "Nível 1 - Sobrevivência";
         else if (t.score >= 20) nivelNome = "Nível 2 - Compromissos";
         else if (t.score >= 5) nivelNome = "Nível 3 - No Radar";
         else nivelNome = "Nível 4 - Em Espera";
 
         const promptText = `
-        Você é um mentor de produtividade sincero, simples e engraçado. Seu tom é casual e direto.
-
-        REGRAS DE ANÁLISE:
-        1. SOBRE O PRAZO E NÍVEL:
-        - Se for "Sem Prazo" mas estiver no Nível 1 ou 2, dê um alerta sério: a tarefa é pesada e está travando a vida, não ignore.
-        - Se for "Sem Prazo" no Nível 3, diga para ficar de olho aberto.
-        - Se for "Sem Prazo" no Nível 4, diga que pode postergar de boa.
-
-        2. SOBRE A DIFICULDADE (Complexidade e Estresse):
-        - Abaixo de 50%: "Mamão com mel", mata logo isso.
-        - 50% a 70%: "Médio", exige um café e foco.
-        - Acima de 70%: Diga que não vai ser tão fácil, vai dar um trabalhinho, kkkk, mas você encara.
-
-        Dê o conselho em no máximo 3 frases curtas. Use negrito no que for crucial. Fale em segunda pessoa (você). Não repita os dados, apenas interprete.
-
-        Tarefa a ser analisada:
-        - Nome: "${t.nome}"
-        - Categoria Atual: ${nivelNome}
-        - Prazo (Urgência): ${pPerc}% (${t.prazoOrig})
-        - Complexidade: ${cPerc}%
-        - Importância: ${isPerc}%
-        - Estresse (PE): ${pePerc}%
-        - Score Total: ${t.score.toFixed(0)}
-        `;
+        Tarefa: "${t.nome}"
+        Contexto: ${nivelNome}
+        Dados: Prazo ${pPerc}%, Complexidade ${cPerc}%, Importância ${isPerc}%, Estresse ${pePerc}%.
+        Score: ${t.score.toFixed(0)}
+        `.trim();
 
         try {
-            // Chamada oficial para a API do Google Gemini
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: promptText }] }],
-                    generationConfig: { temperature: 0.8 }
+                    generationConfig: { 
+                        temperature: 0.85,
+                        systemInstruction: {
+                            parts: [{ text: `Você é um mentor de produtividade casual, direto e engraçado. 
+                            Siga RIGOROSAMENTE esta classificação baseada nos valores de Complexidade e Estresse que eu te passar:
+                            
+                            1. SE PRAZO É 0% (Sem Prazo):
+                               - Se o Nível for 1 ou 2, dê um alerta sério: "tá sem prazo mas tá no topo, resolve logo".
+                               - Se for Nível 4, diga que pode postergar de boa.
+                               
+                            2. LÓGICA DE DIFICULDADE (Olhe Complexidade e Estresse):
+                               - Abaixo de 50%: "Mamão com mel", "suave", diz pra matar logo sem drama.
+                               - 50% a 60%: "Tranquilo", diz que vai rápido se não enrolar.
+                               - 60% a 70%: "Médio", exige um café e foco.
+                               - Acima de 70%: Diga que não vai ser tão fácil, vai dar um trabalhinho, kkkk, mas o usuário encara.
+
+                            REGRAS DE OURO:
+                            - Não repita os números/porcentagens (o usuário já vê as barras).
+                            - Fale em segunda pessoa (você).
+                            - Máximo 3 frases curtas. Use **negrito** para destacar a ação principal.` }]
+                        }
+                    }
                 })
             });
 
             if (!response.ok) {
-                let mensagemErro = "Erro na API do Gemini";
-                try {
-                    const erroData = await response.json();
-                    mensagemErro = erroData.error?.message || mensagemErro;
-                } catch {
-                    mensagemErro = await response.text(); 
-                }
-                throw new Error(mensagemErro);
+                const erroData = await response.json();
+                throw new Error(erroData.error?.message || "Erro na API");
             }
 
             const data = await response.json();
-            // Caminho correto para pegar a resposta no JSON do Gemini
-            const respostaIA = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sem resposta da IA.";
+            const respostaIA = data.candidates?.[0]?.content?.parts?.[0]?.text || "IA bugou...";
             
-            // Segurança contra XSS e formatação
             const safeText = respostaIA
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
                 .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
                 .replace(/\n/g, "<br>");
 
             content.innerHTML = safeText;
 
         } catch (error) {
-            content.innerHTML = `
-                <p style="color: var(--danger); font-weight: bold;">⚠️ Erro de Conexão</p>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">${error.message}</p>
-            `;
+            content.innerHTML = `<p style="color: var(--danger); font-weight: bold;">⚠️ Erro de Conexão</p><p style="font-size: 0.85rem; color: var(--text-muted);">${error.message}</p>`;
         }
     }
 
