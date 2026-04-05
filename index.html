@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Modo Claro */
             --bg-body: #f8fafc; --text-main: #0f172a; --text-muted: #64748b;
             --border-color: #e2e8f0; --primary: #3b82f6; --primary-hover: #2563eb;
             --success: #10b981; --danger: #ef4444; --purple: #8b5cf6;
@@ -24,13 +23,10 @@
         }
 
         body.dark-mode {
-            /* Modo Escuro Suavizado */
             --bg-body: #0f172a; --card-bg: #1e293b; --input-bg: #334155;
             --border-color: #334155; --text-main: #e2e8f0; --text-muted: #94a3b8;
             --modal-overlay: rgba(0, 0, 0, 0.7);
-            
             --primary: #60a5fa; --success: #34d399; --danger: #f87171; --purple: #a78bfa;
-            
             --lvl1-bg: rgba(248, 113, 113, 0.15); --lvl1-border: #f87171; --lvl1-text: #fca5a5;
             --lvl2-bg: rgba(251, 146, 60, 0.15); --lvl2-border: #fb923c; --lvl2-text: #fdba74;
             --lvl3-bg: rgba(52, 211, 153, 0.15); --lvl3-border: #34d399; --lvl3-text: #6ee7b7;
@@ -41,52 +37,37 @@
         .container { max-width: 850px; margin: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .header h1 { font-size: 1.5rem; margin: 0; display: flex; align-items: center; gap: 10px; }
-        
         .action-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; background: var(--card-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 5px 10px -3px rgba(0,0,0,0.05); }
-        
         .btn { font-family: inherit; font-weight: 600; font-size: 0.85rem; padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .btn-outline { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); }
         .btn-primary { background: var(--primary); color: #fff; }
         .btn-danger-outline { background: transparent; color: var(--danger); border: 1px solid var(--danger); margin-left: auto; }
-        
         .panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: none; }
         .panel.active { display: block; animation: slideDown 0.3s ease-out; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem; box-sizing: border-box; }
-
         .level-header { font-size: 0.85rem; font-weight: 800; margin: 24px 0 10px 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; opacity: 0.8; }
-        
         .task-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 8px; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-left-width: 4px; transition: all 0.2s; cursor: pointer; position: relative; }
         .task-item:not(.feito):hover { transform: scale(1.005); box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-color: var(--primary); }
-
         .score-circle { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
-        
         .task-info { flex-grow: 1; width: 100%; pointer-events: none; }
         .task-info strong { font-size: 1rem; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-        
         .stats-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 4px; }
         .stat-box { display: flex; align-items: center; gap: 4px; font-size: 0.7rem; color: var(--text-muted); font-weight: 600; }
         .stat-bar { flex-grow: 1; height: 4px; background-color: var(--border-color); border-radius: 2px; overflow: hidden; }
         .stat-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
         .stat-percent { width: 24px; text-align: right; font-variant-numeric: tabular-nums; }
-        
         .badge.fixed { padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; background-color: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); }
-        
         .task-actions { display: flex; gap: 4px; z-index: 10; }
         .btn-icon { background: transparent; border: none; cursor: pointer; padding: 6px; border-radius: 6px; font-size: 0.9rem; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .btn-check { color: var(--success); }
         .btn-check:hover { background: rgba(52, 211, 153, 0.1); }
         .btn-delete { color: var(--text-muted); }
         .btn-delete:hover { color: var(--danger); background: rgba(248, 113, 113, 0.1); }
-
-        /* Estilo Tarefa Concluída */
         .task-item.feito { opacity: 0.45; filter: grayscale(80%); background: transparent; cursor: default; }
         .task-item.feito .stats-container { display: none; }
         .task-item.feito strong { text-decoration: line-through; color: var(--text-muted); margin-bottom: 0; }
         .task-item.feito .score-circle { width: 28px; height: 28px; font-size: 0.8rem; }
-
-        /* Níveis */
         .nivel-1 { border-left-color: var(--lvl1-border); }
         .nivel-1 .score-circle { background-color: var(--lvl1-bg); color: var(--lvl1-text); border: 1px solid var(--lvl1-border); }
         .nivel-2 { border-left-color: var(--lvl2-border); }
@@ -95,8 +76,6 @@
         .nivel-3 .score-circle { background-color: var(--lvl3-bg); color: var(--lvl3-text); border: 1px solid var(--lvl3-border); }
         .nivel-4 { border-left-color: var(--lvl4-border); }
         .nivel-4 .score-circle { background-color: var(--lvl4-bg); color: var(--lvl4-text); border: 1px solid var(--lvl4-border); }
-
-        /* Modal IA */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-overlay.active { display: flex; animation: fadeIn 0.2s ease; }
         .modal-content { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; width: 90%; max-width: 450px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); position: relative; }
@@ -104,14 +83,9 @@
         .modal-header h2 { margin: 0; font-size: 1.2rem; }
         .ai-response { font-size: 0.95rem; line-height: 1.5; color: var(--text-main); min-height: 60px; }
         .loader { border: 3px solid var(--border-color); border-top: 3px solid var(--purple); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 20px auto; }
-        
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        @media (max-width: 600px) { 
-            .stats-container { grid-template-columns: repeat(2, 1fr); gap: 6px; } 
-            .action-bar { justify-content: center; }
-        }
+        @media (max-width: 600px) { .stats-container { grid-template-columns: repeat(2, 1fr); gap: 6px; } .action-bar { justify-content: center; } }
     </style>
 </head>
 <body class="dark-mode">
@@ -127,7 +101,7 @@
 
     <div id="panelConfig" class="panel">
         <h3>🤖 Configurar Gemini IA</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">Cole sua API Key do Google AI Studio (Vincule o faturamento/cartão para o Gemini 2.5).</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">API Key do Google AI Studio (Vincule o cartão para o Gemini 2.5).</p>
         <input type="password" id="apiKeyInput" placeholder="AIzaSy...">
         <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="salvarApiKey()">Salvar Chave</button>
     </div>
@@ -187,7 +161,6 @@
     let modoEscuro = localStorage.getItem('prefTema') === null ? true : JSON.parse(localStorage.getItem('prefTema'));
     let apiKey = localStorage.getItem('geminiApiKey') || '';
 
-    // Constantes de Escala
     const MAX_PRAZO = 3.8;
     const MAX_COMPLEXIDADE = 9;
     const MAX_IMPORTANCIA = 9;
@@ -333,6 +306,7 @@
     function fecharModal(e) { if(e.target.id === 'aiModal') document.getElementById('aiModal').classList.remove('active'); }
     function fecharModalClick() { document.getElementById('aiModal').classList.remove('active'); }
 
+    // --- FUNÇÃO DE IA CORRIGIDA (Gemini 2.5 Flash) ---
     async function analisarTarefaComIA(index) {
         if (!apiKey) { alert("⚠️ Configure a API Key 🤖"); togglePanel('panelConfig'); return; }
         const t = tarefas[index]; if (!t || t.feito) return;
@@ -345,24 +319,42 @@
         const eP = Math.round((t.pe / MAX_ESTRESSE) * 100); 
         let nivel = t.score >= 50 ? "Nível 1 (Crítico)" : t.score >= 20 ? "Nível 2" : t.score >= 5 ? "Nível 3" : "Nível 4";
 
-        const prompt = `Tarefa: "${t.nome}". Contexto: ${nivel}. Métricas: Prazo ${pP}%, Comp ${cP}%, Imp ${iP}%, Estr ${eP}%. Score: ${t.score.toFixed(0)}`;
+        const promptData = `Tarefa: "${t.nome}". Contexto: ${nivel}. Métricas: Prazo ${pP}%, Comp ${cP}%, Imp ${iP}%, Estr ${eP}%. Score: ${t.score.toFixed(0)}`;
 
         try {
             const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
+                    contents: [{ parts: [{ text: promptData }] }],
+                    // CORREÇÃO: system_instruction deve ser um campo de alto nível, fora do generationConfig
+                    system_instruction: { 
+                        parts: [{ text: `Você é um mentor de produtividade casual, direto e engraçado. Seu tom é de "papo reto". REGRAS: 1. Se "Sem Prazo" (0%) mas Nível 1/2, dê um alerta sério. 2. Lógica: <50% "Mamão com mel"; 50-70% "Médio"; >70% "Trabalhinho, kkkk". Use no máximo 3 frases. Destaque o principal em **negrito**. Não repita dados brutos.` }] 
+                    },
                     generationConfig: { 
-                        temperature: 0.85,
-                        systemInstruction: { parts: [{ text: `Você é um mentor casual e engraçado. REGRAS: 1. Se "Sem Prazo" (0%) mas Nível 1/2, dê alerta sério. 2. Lógica: <50% "Mamão com mel"; 50-70% "Médio"; >70% "Trabalhinho, kkkk". Use no máximo 3 frases. Destaque em **negrito**. Não repita dados.` }] }
+                        temperature: 0.85 
                     }
                 })
             });
-            if (!resp.ok) { let msg = "Erro API"; try { const d = await resp.json(); msg = d.error?.message || msg; } catch { msg = await resp.text(); } throw new Error(msg); }
-            const data = await resp.json(); const txt = data.candidates?.[0]?.content?.parts?.[0]?.text || "...";
-            content.innerHTML = txt.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>");
-        } catch (err) { content.innerHTML = `<p style="color:var(--danger); font-weight:bold;">⚠️ Erro</p><p style="font-size:0.8rem;">${err.message}</p>`; }
+
+            if (!resp.ok) { 
+                let msg = "Erro API"; 
+                try { const d = await resp.json(); msg = d.error?.message || msg; } 
+                catch { msg = await resp.text(); } 
+                throw new Error(msg); 
+            }
+
+            const data = await resp.json(); 
+            const txt = data.candidates?.[0]?.content?.parts?.[0]?.text || "Gemini ficou em silêncio...";
+            
+            content.innerHTML = txt
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                .replace(/\n/g, "<br>");
+
+        } catch (err) { 
+            content.innerHTML = `<p style="color:var(--danger); font-weight:bold;">⚠️ Erro de Conexão</p><p style="font-size:0.8rem;">${err.message}</p>`; 
+        }
     }
 
     window.onload = () => { aplicarTema(); atualizarBotaoOrdem(); salvarERenderizar(); };
