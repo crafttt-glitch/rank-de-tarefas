@@ -348,7 +348,7 @@
     // --- LOGICA IA TURBINADA ---
     async function analisarIA(index, event) {
         if (!apiKey) {
-            alert("⚠️ Configure sua API Key da Groq no botão 🤖.");
+            alert("⚠️ Por favor, configure sua API Key da Groq (gsk_...) no botão 🤖.");
             togglePanel('panelConfig');
             return;
         }
@@ -359,20 +359,23 @@
         const modal = document.getElementById('aiModal');
         const content = document.getElementById('aiContent');
         modal.classList.add('active');
-        content.innerHTML = '<div class="loader"></div><p style="text-align:center; color:var(--text-muted);">Consultando o mestre tático...</p>';
-
-        // Pegamos o contexto do nível (Sobrevivência, Compromisso, etc)
-        const nivelTraduzido = t.score >= 50 ? "Sobrevivência (Crítico)" : t.score >= 20 ? "Compromisso Pesado" : t.score >= 5 ? "No Radar" : "Em Espera";
+        content.innerHTML = '<div class="loader"></div><p style="text-align:center; color:var(--text-muted);">Consultando o Oráculo...</p>';
 
         const promptText = `
-        Analise esta tarefa da minha lista:
+        Analise esta tarefa com base nos dados técnicos fornecidos. Seja **analítico, informal, engraçado e sincero**. 
+        Use gírias brasileiras (tipo 'mamão com mel', 'pé nas costas', 'bronca', 'dar trabalho'). 
+        Se os números de estresse e complexidade forem baixos, deboche um pouco da facilidade. 
+        Se o score for alto e o prazo curto, mande o real peso da responsabilidade (com um 'kkkkk' de nervoso).
+
+        Dados da Missão:
         - Nome: ${t.nome}
-        - Nível Atual: ${nivelTraduzido}
-        - Prazo/Urgência: ${Math.round((t.prazoAtualizado / 3.8) * 100)}% (${t.prazoOrig})
-        - Complexidade (Dificuldade): ${Math.round((t.complexidade / 9) * 100)}%
-        - Importância: ${Math.round((t.is / 9) * 100)}%
-        - Estresse (Ansiedade): ${Math.round((t.pe / 10) * 100)}%
-        - Fixo: ${t.eventoFixo ? 'Sim' : 'Não'}
+        - Urgência Real (P): ${t.prazoAtualizado} (Prazo: ${t.prazoOrig})
+        - Complexidade (C): ${t.complexidade}/9
+        - Importância (IS): ${t.is}/9
+        - Estresse (PE): ${t.pe}/10
+        - Score Final: ${t.score.toFixed(1)}
+
+        Regras: No máximo 3 frases curtas e diretas. Use **negrito** no veredito principal. Fale diretamente para mim (você/tu).
         `;
 
         try {
@@ -387,17 +390,11 @@
                     messages: [
                         { 
                             role: "system", 
-                            content: `Você é um mentor de produtividade brasileiro, informal, sagaz e direto. 
-                            Sua missão é dar um "papo reto" sobre a tarefa. 
-                            - Se os números forem baixos, use termos como "mamão com mel", "suave", "mata logo isso".
-                            - Se o estresse e complexidade forem altos, reconheça que "o bicho vai pegar", mas dê um norte.
-                            - Seja sarcástico se o usuário estiver estressado com algo fácil, ou motivador se for um desafio real.
-                            - Use gírias leves (bora, vixe, kkk, caramba). 
-                            - Regra: No máximo 3 frases curtas e impactantes. Use negrito no que for ação.` 
+                            content: "Você é um mentor de produtividade brasileiro, muito informal, engraçado e ácido. Você analisa os números friamente mas fala como um 'brother' que quer ver o trabalho feito ou rir do caos." 
                         },
                         { role: "user", content: promptText }
                     ],
-                    temperature: 0.8 // Aumentado para dar mais "personalidade" e variação
+                    temperature: 0.8 // Aumentei um pouco a criatividade pra ele variar as gírias
                 })
             });
 
