@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Modo Claro (Mantido) */
             --bg-body: #f8fafc; --text-main: #0f172a; --text-muted: #64748b;
             --border-color: #e2e8f0; --primary: #3b82f6; --primary-hover: #2563eb;
             --success: #10b981; --danger: #ef4444; --purple: #8b5cf6;
@@ -22,13 +23,26 @@
         }
 
         body.dark-mode {
-            --bg-body: #020617; --text-main: #f1f5f9; --text-muted: #94a3b8;
-            --border-color: #1e293b; --card-bg: #0f172a; --input-bg: #1e293b;
+            /* Modo Escuro (Suavizado e Dessaturado para conforto visual) */
+            --bg-body: #0f172a; 
+            --card-bg: #1e293b; 
+            --input-bg: #334155;
+            --border-color: #334155; 
+            --text-main: #e2e8f0; 
+            --text-muted: #94a3b8;
             
-            --lvl1-bg: rgba(153, 27, 27, 0.2); --lvl1-border: #ef4444; --lvl1-text: #fecaca;
-            --lvl2-bg: rgba(154, 52, 18, 0.2); --lvl2-border: #f97316; --lvl2-text: #fed7aa;
-            --lvl3-bg: rgba(21, 128, 61, 0.2); --lvl3-border: #22c55e; --lvl3-text: #bbf7d0;
-            --lvl4-bg: rgba(71, 85, 105, 0.2); --lvl4-border: #94a3b8; --lvl4-text: #e2e8f0;
+            /* Cores de status em tons pastel */
+            --primary: #60a5fa; 
+            --primary-hover: #3b82f6;
+            --success: #34d399; 
+            --danger: #f87171; 
+            --purple: #a78bfa;
+            
+            /* Cores dos níveis amenizadas */
+            --lvl1-bg: rgba(248, 113, 113, 0.15); --lvl1-border: #f87171; --lvl1-text: #fca5a5;
+            --lvl2-bg: rgba(251, 146, 60, 0.15); --lvl2-border: #fb923c; --lvl2-text: #fdba74;
+            --lvl3-bg: rgba(52, 211, 153, 0.15); --lvl3-border: #34d399; --lvl3-text: #6ee7b7;
+            --lvl4-bg: rgba(148, 163, 184, 0.15); --lvl4-border: #94a3b8; --lvl4-text: #cbd5e1;
         }
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 15px; transition: all 0.3s ease; }
@@ -48,11 +62,10 @@
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 0.9rem; box-sizing: border-box; }
-        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2); }
 
         .level-header { font-size: 0.85rem; font-weight: 800; margin: 24px 0 10px 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; opacity: 0.8; }
         
-        /* Ajuste fino nos cards (menos preenchimento) */
         .task-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 8px; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-left-width: 4px; transition: all 0.2s; }
         .task-item:hover { transform: scale(1.005); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
@@ -61,7 +74,6 @@
         .task-info { flex-grow: 1; width: 100%; }
         .task-info strong { font-size: 1rem; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
         
-        /* Grid Compacto e Limpo para Status */
         .stats-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 4px; }
         .stat-box { display: flex; align-items: center; gap: 4px; font-size: 0.7rem; color: var(--text-muted); font-weight: 600; }
         .stat-label { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
@@ -69,10 +81,11 @@
         .stat-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
         .stat-percent { width: 24px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
         
+        body.dark-mode .badge.fixed { background-color: rgba(248, 113, 113, 0.1); color: var(--danger); border-color: var(--danger); }
         .badge.fixed { padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; background-color: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); }
         
         .btn-delete { background: transparent; color: var(--text-muted); border: none; cursor: pointer; padding: 6px; border-radius: 6px; font-size: 0.8rem; }
-        .btn-delete:hover { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+        .btn-delete:hover { color: var(--danger); background: rgba(248, 113, 113, 0.1); }
 
         .nivel-1 { border-left-color: var(--lvl1-border); }
         .nivel-1 .score-circle { background-color: var(--lvl1-bg); color: var(--lvl1-text); border: 1px solid var(--lvl1-border); }
@@ -89,7 +102,7 @@
         @media (max-width: 600px) { 
             .grid-row.first { grid-template-columns: 1fr; } 
             .btn-danger-outline { margin-left: 0; width: 100%; justify-content: center; } 
-            .stats-container { grid-template-columns: repeat(2, 1fr); gap: 6px; } /* Quebra em 2 colunas suaves no mobile */
+            .stats-container { grid-template-columns: repeat(2, 1fr); gap: 6px; } 
         }
     </style>
 </head>
@@ -150,7 +163,7 @@
         if (modoEscuro) {
             document.body.classList.add('dark-mode');
             btn.innerText = "☀️";
-            document.getElementById("theme-color").setAttribute("content", "#020617");
+            document.getElementById("theme-color").setAttribute("content", "#0f172a");
         } else {
             document.body.classList.remove('dark-mode');
             btn.innerText = "🌙";
@@ -170,9 +183,11 @@
         if(ordenarPorComplexidade) {
             btn.innerHTML = `🟢 Ordem: Fáceis`;
             btn.style.backgroundColor = "var(--success)"; btn.style.borderColor = "var(--success)";
+            btn.style.color = "#0f172a"; // Texto escuro para contrastar no verde pastel
         } else {
             btn.innerHTML = `🔄 Ordem: Score`;
             btn.style.backgroundColor = "var(--purple)"; btn.style.borderColor = "var(--purple)";
+            btn.style.color = "white";
         }
     }
 
@@ -231,7 +246,6 @@
                     let percIS = Math.round((t.is / 9) * 100); 
                     let percPE = Math.round((t.pe / 10) * 100); 
 
-                    // Layout compactado com barras finas
                     htmlFinal += `
                         <div class="task-item ${chave}">
                             <div class="score-circle" title="Posição no Rank">#${globalRank}</div>
