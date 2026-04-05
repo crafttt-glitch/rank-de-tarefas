@@ -368,7 +368,8 @@ async function analisarIA(index, event) {
         `;
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+            // AQUI ESTÁ A MÁGICA: Atualizado para o gemini-2.0-flash
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -377,7 +378,6 @@ async function analisarIA(index, event) {
                 })
             });
 
-            // Se o Google recusar, extraímos o motivo exato do erro!
             if (!response.ok) {
                 const erroDetalhado = await response.json();
                 console.error("Erro do Google:", erroDetalhado);
@@ -392,8 +392,7 @@ async function analisarIA(index, event) {
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
         } catch (error) {
-            // Agora o erro exato vai aparecer na tela do popup
-            content.innerHTML = `<p style="color: var(--danger); font-weight: bold;">⚠️ Erro de Conexão</p><p style="font-size: 0.85rem; color: var(--text-muted);">${error.message}</p><p style="font-size: 0.8rem; margin-top: 10px;">Verifique se copiou a chave certa no botão 🤖.</p>`;
+            content.innerHTML = `<p style="color: var(--danger); font-weight: bold;">⚠️ Erro de Conexão</p><p style="font-size: 0.85rem; color: var(--text-muted);">${error.message}</p>`;
         }
     }
 
