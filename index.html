@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Modo Claro (Mantido) */
             --bg-body: #f8fafc; --text-main: #0f172a; --text-muted: #64748b;
             --border-color: #e2e8f0; --primary: #3b82f6; --primary-hover: #2563eb;
             --success: #10b981; --danger: #ef4444; --purple: #8b5cf6;
@@ -23,22 +22,9 @@
         }
 
         body.dark-mode {
-            /* Modo Escuro (Suavizado e Dessaturado para conforto visual) */
-            --bg-body: #0f172a; 
-            --card-bg: #1e293b; 
-            --input-bg: #334155;
-            --border-color: #334155; 
-            --text-main: #e2e8f0; 
-            --text-muted: #94a3b8;
+            --bg-body: #0f172a; --text-main: #e2e8f0; --text-muted: #94a3b8;
+            --border-color: #334155; --card-bg: #1e293b; --input-bg: #334155;
             
-            /* Cores de status em tons pastel */
-            --primary: #60a5fa; 
-            --primary-hover: #3b82f6;
-            --success: #34d399; 
-            --danger: #f87171; 
-            --purple: #a78bfa;
-            
-            /* Cores dos níveis amenizadas */
             --lvl1-bg: rgba(248, 113, 113, 0.15); --lvl1-border: #f87171; --lvl1-text: #fca5a5;
             --lvl2-bg: rgba(251, 146, 60, 0.15); --lvl2-border: #fb923c; --lvl2-text: #fdba74;
             --lvl3-bg: rgba(52, 211, 153, 0.15); --lvl3-border: #34d399; --lvl3-text: #6ee7b7;
@@ -67,14 +53,14 @@
         .level-header { font-size: 0.85rem; font-weight: 800; margin: 24px 0 10px 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; opacity: 0.8; }
         
         .task-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 8px; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-left-width: 4px; transition: all 0.2s; }
-        .task-item:hover { transform: scale(1.005); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .task-item:not(.feito):hover { transform: scale(1.005); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
-        .score-circle { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .score-circle { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); transition: 0.3s; }
         
-        .task-info { flex-grow: 1; width: 100%; }
-        .task-info strong { font-size: 1rem; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .task-info { flex-grow: 1; width: 100%; transition: 0.3s; }
+        .task-info strong { font-size: 1rem; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; transition: 0.3s; }
         
-        .stats-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 4px; }
+        .stats-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 4px; transition: 0.3s; }
         .stat-box { display: flex; align-items: center; gap: 4px; font-size: 0.7rem; color: var(--text-muted); font-weight: 600; }
         .stat-label { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
         .stat-bar { flex-grow: 1; height: 4px; background-color: var(--border-color); border-radius: 2px; overflow: hidden; display: block; }
@@ -84,8 +70,31 @@
         body.dark-mode .badge.fixed { background-color: rgba(248, 113, 113, 0.1); color: var(--danger); border-color: var(--danger); }
         .badge.fixed { padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; background-color: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); }
         
-        .btn-delete { background: transparent; color: var(--text-muted); border: none; cursor: pointer; padding: 6px; border-radius: 6px; font-size: 0.8rem; }
+        .task-actions { display: flex; gap: 4px; }
+        .btn-icon { background: transparent; border: none; cursor: pointer; padding: 6px; border-radius: 6px; font-size: 0.9rem; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .btn-check { color: var(--success); }
+        .btn-check:hover { background: rgba(52, 211, 153, 0.1); }
+        .btn-delete { color: var(--text-muted); }
         .btn-delete:hover { color: var(--danger); background: rgba(248, 113, 113, 0.1); }
+
+        /* --- ESTILOS DE TAREFA CONCLUÍDA ("FEITO") --- */
+        .task-item.feito {
+            opacity: 0.45; /* Desligado */
+            padding: 8px 14px; /* Menor */
+            filter: grayscale(80%);
+            background: transparent;
+        }
+        .task-item.feito .stats-container {
+            display: none; /* Esconde as barras de status para encolher */
+        }
+        .task-item.feito strong {
+            text-decoration: line-through; /* Riscado */
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+        .task-item.feito .score-circle {
+            width: 28px; height: 28px; font-size: 0.8rem; /* Bolinha menor */
+        }
 
         .nivel-1 { border-left-color: var(--lvl1-border); }
         .nivel-1 .score-circle { background-color: var(--lvl1-bg); color: var(--lvl1-text); border: 1px solid var(--lvl1-border); }
@@ -152,6 +161,9 @@
     let ordenarPorComplexidade = JSON.parse(localStorage.getItem('prefOrdem')) || false;
     let modoEscuro = localStorage.getItem('prefTema') === null ? true : JSON.parse(localStorage.getItem('prefTema'));
 
+    // Garantir que tarefas antigas tenham a propriedade 'feito'
+    tarefas.forEach(t => { if(t.feito === undefined) t.feito = false; });
+
     function toggleTema() {
         modoEscuro = !modoEscuro;
         localStorage.setItem('prefTema', JSON.stringify(modoEscuro));
@@ -183,7 +195,7 @@
         if(ordenarPorComplexidade) {
             btn.innerHTML = `🟢 Ordem: Fáceis`;
             btn.style.backgroundColor = "var(--success)"; btn.style.borderColor = "var(--success)";
-            btn.style.color = "#0f172a"; // Texto escuro para contrastar no verde pastel
+            btn.style.color = "#0f172a"; 
         } else {
             btn.innerHTML = `🔄 Ordem: Score`;
             btn.style.backgroundColor = "var(--purple)"; btn.style.borderColor = "var(--purple)";
@@ -229,7 +241,14 @@
         let niveis = { "nivel-1": { nome: "Sobrevivência", icon: "🔥", itens: [] }, "nivel-2": { nome: "Compromissos", icon: "⚠️", itens: [] }, "nivel-3": { nome: "No Radar", icon: "👀", itens: [] }, "nivel-4": { nome: "Em Espera", icon: "☕", itens: [] } };
         tarefas.forEach(t => { if (t.score >= 50) niveis["nivel-1"].itens.push(t); else if (t.score >= 20) niveis["nivel-2"].itens.push(t); else if (t.score >= 5) niveis["nivel-3"].itens.push(t); else niveis["nivel-4"].itens.push(t); });
 
-        for (let chave in niveis) { niveis[chave].itens.sort((a, b) => { if (ordenarPorComplexidade && a.complexidade !== b.complexidade) return a.complexidade - b.complexidade; return b.score - a.score; }); }
+        // Nova Lógica de Ordenação: Primeiro vê se tá feito (joga pro final), depois ordena normal
+        for (let chave in niveis) { 
+            niveis[chave].itens.sort((a, b) => { 
+                if (a.feito !== b.feito) return a.feito ? 1 : -1; // Concluídas vão para baixo
+                if (ordenarPorComplexidade && a.complexidade !== b.complexidade) return a.complexidade - b.complexidade; 
+                return b.score - a.score; 
+            }); 
+        }
 
         let htmlFinal = "";
         let globalRank = 1;
@@ -240,6 +259,9 @@
                 niveis[chave].itens.forEach(t => {
                     let indexOriginal = tarefas.indexOf(t);
                     let badgeFixo = t.eventoFixo ? `<span class="badge fixed">📌 Fixo</span>` : '';
+                    let classeFeito = t.feito ? 'feito' : '';
+                    let iconeFeito = t.feito ? '↩️' : '✔️'; // Botão vira Desfazer se estiver feito
+                    let numRank = t.feito ? '-' : `#${globalRank}`; // Se tiver feito, tira o número
                     
                     let percP = Math.min(100, Math.max(0, Math.round((t.prazoAtualizado / 3.8) * 100))); 
                     let percC = Math.round((t.complexidade / 9) * 100); 
@@ -247,8 +269,8 @@
                     let percPE = Math.round((t.pe / 10) * 100); 
 
                     htmlFinal += `
-                        <div class="task-item ${chave}">
-                            <div class="score-circle" title="Posição no Rank">#${globalRank}</div>
+                        <div class="task-item ${chave} ${classeFeito}">
+                            <div class="score-circle" title="Posição no Rank">${numRank}</div>
                             <div class="task-info">
                                 <strong>${t.nome} ${badgeFixo}</strong>
                                 <div class="stats-container">
@@ -274,10 +296,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn-delete" onclick="removerTarefa(${indexOriginal})" title="Remover tarefa">✖</button>
+                            <div class="task-actions">
+                                <button class="btn-icon btn-check" onclick="toggleFeito(${indexOriginal})" title="Marcar como concluída">${iconeFeito}</button>
+                                <button class="btn-icon btn-delete" onclick="removerTarefa(${indexOriginal})" title="Excluir">✖</button>
+                            </div>
                         </div>
                     `;
-                    globalRank++;
+                    if(!t.feito) globalRank++; // Só sobe o rank de quem não está feito
                 });
             }
         }
@@ -285,9 +310,10 @@
     }
 
     function togglePanel(id) { let p = document.getElementById(id); let act = p.classList.contains('active'); document.querySelectorAll('.panel').forEach(x => x.classList.remove('active')); if(!act) p.classList.add('active'); }
-    function adicionarTarefaUnica() { let nome = document.getElementById("nome").value; if(!nome) return; let dia = document.getElementById("dia").value; let turno = document.getElementById("turno").value; tarefas.push({ nome, prazoOrig: dia === "sem prazo" ? "sem prazo" : `${dia} ${turno}`, complexidade: parseFloat(document.getElementById("complexidade").value) || 6, is: parseFloat(document.getElementById("is").value) || 6, pe: parseFloat(document.getElementById("pe").value) || 0, eventoFixo: document.getElementById("eventoFixo").checked }); document.getElementById("nome").value = ""; togglePanel('panelAdd'); salvarERenderizar(); }
-    function importarLote() { let texto = document.getElementById("bulkText").value; texto.split('\n').forEach(l => { let p = l.split('|').map(x => x.trim()); if(p.length >= 6) tarefas.push({ nome: p[0], prazoOrig: p[1], complexidade: parseEscala(p[2]), is: parseEscala(p[3]), pe: p[4]==="-"?0:parseFloat(p[4])||0, eventoFixo: p[5].toLowerCase()==="sim" }); }); document.getElementById("bulkText").value = ""; togglePanel('panelImport'); salvarERenderizar(); }
+    function adicionarTarefaUnica() { let nome = document.getElementById("nome").value; if(!nome) return; let dia = document.getElementById("dia").value; let turno = document.getElementById("turno").value; tarefas.push({ nome, prazoOrig: dia === "sem prazo" ? "sem prazo" : `${dia} ${turno}`, complexidade: parseFloat(document.getElementById("complexidade").value) || 6, is: parseFloat(document.getElementById("is").value) || 6, pe: parseFloat(document.getElementById("pe").value) || 0, eventoFixo: document.getElementById("eventoFixo").checked, feito: false }); document.getElementById("nome").value = ""; togglePanel('panelAdd'); salvarERenderizar(); }
+    function importarLote() { let texto = document.getElementById("bulkText").value; texto.split('\n').forEach(l => { let p = l.split('|').map(x => x.trim()); if(p.length >= 6) tarefas.push({ nome: p[0], prazoOrig: p[1], complexidade: parseEscala(p[2]), is: parseEscala(p[3]), pe: p[4]==="-"?0:parseFloat(p[4])||0, eventoFixo: p[5].toLowerCase()==="sim", feito: false }); }); document.getElementById("bulkText").value = ""; togglePanel('panelImport'); salvarERenderizar(); }
     function removerTarefa(i) { tarefas.splice(i, 1); salvarERenderizar(); }
+    function toggleFeito(i) { tarefas[i].feito = !tarefas[i].feito; salvarERenderizar(); } // Nova função
     function limparTudo() { if(confirm("Apagar todas as tarefas?")) { tarefas = []; salvarERenderizar(); } }
 
     window.onload = () => { aplicarTema(); atualizarBotaoOrdem(); salvarERenderizar(); };
