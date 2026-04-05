@@ -59,7 +59,7 @@
 
         .score-circle { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); transition: 0.3s; }
         
-        .task-info { flex-grow: 1; width: 100%; transition: 0.3s; pointer-events: none; } /* Deixa o clique passar pro card */
+        .task-info { flex-grow: 1; width: 100%; transition: 0.3s; pointer-events: none; }
         .task-info strong { font-size: 1rem; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; transition: 0.3s; }
         
         .stats-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 4px; transition: 0.3s; }
@@ -97,13 +97,13 @@
         .grid-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 10px; }
         .grid-row.first { grid-template-columns: 2fr 1fr 1fr; }
         
-        /* --- ESTILOS DO MODAL IA --- */
+        /* Modal IA */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-overlay.active { display: flex; animation: fadeIn 0.2s ease; }
         .modal-content { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; width: 90%; max-width: 450px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); position: relative; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
-        .modal-header h2 { margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 8px;}
-        .ai-response { font-size: 0.95rem; line-height: 1.5; color: var(--text-main); min-height: 60px; }
+        .modal-header h2 { margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;}
+        .ai-response { font-size: 0.92rem; line-height: 1.6; color: var(--text-main); min-height: 60px; }
         .loader { border: 3px solid var(--border-color); border-top: 3px solid var(--purple); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -127,9 +127,9 @@
     </div>
 
     <div id="panelConfig" class="panel">
-        <h3 style="margin-top:0; display:flex; align-items:center; gap:8px;">🤖 Configurar Gemini IA</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">Cole sua API Key do Google AI Studio aqui. Ela fica salva apenas no seu navegador.</p>
-        <input type="password" id="apiKeyInput" placeholder="Colar API Key (AIzaSy...)">
+        <h3 style="margin-top:0; display:flex; align-items:center; gap:8px;">🤖 Configurar Chave Groq</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Cole sua API Key da Groq (gsk_...) aqui.</p>
+        <input type="password" id="apiKeyInput" placeholder="gsk_...">
         <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="salvarApiKey()">Salvar Chave</button>
     </div>
 
@@ -160,7 +160,7 @@
 
     <div id="panelImport" class="panel">
         <textarea id="bulkText" placeholder="Nome | Dia Turno | C | IS | PE | sim/nao"></textarea>
-        <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:10px;background-color:var(--success);" onclick="importarLote()">Processar Importação</button>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:12px;background-color:var(--success);" onclick="importarLote()">Processar Importação</button>
     </div>
 
     <div id="taskList"></div>
@@ -169,8 +169,8 @@
 <div class="modal-overlay" id="aiModal" onclick="fecharModal(event)">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>✨ Análise Tática</h2>
-            <button class="btn-close" onclick="fecharModalClick()">✖</button>
+            <h2>✨ Estrategista Tático</h2>
+            <button class="btn-icon" style="color:var(--text-muted)" onclick="fecharModalClick()">✖</button>
         </div>
         <div id="aiContent" class="ai-response">
             <div class="loader"></div>
@@ -184,15 +184,12 @@
     let modoEscuro = localStorage.getItem('prefTema') === null ? true : JSON.parse(localStorage.getItem('prefTema'));
     let apiKey = localStorage.getItem('geminiApiKey') || '';
 
-    // Carrega a chave no input se existir
     if(apiKey) document.getElementById('apiKeyInput').value = apiKey;
-
-    tarefas.forEach(t => { if(t.feito === undefined) t.feito = false; });
 
     function salvarApiKey() {
         apiKey = document.getElementById('apiKeyInput').value.trim();
         localStorage.setItem('geminiApiKey', apiKey);
-        alert('API Key salva com sucesso no seu navegador!');
+        alert('Chave Groq salva!');
         togglePanel('panelConfig');
     }
 
@@ -299,10 +296,9 @@
                     let percIS = Math.round((t.is / 9) * 100); 
                     let percPE = Math.round((t.pe / 10) * 100); 
 
-                    // Alteração: O evento onclick="analisarIA" foi adicionado ao card inteiro (mas evita os botões)
                     htmlFinal += `
-                        <div class="task-item ${chave} ${classeFeito}" onclick="analisarIA(${indexOriginal}, event)">
-                            <div class="score-circle" title="Posição no Rank">${numRank}</div>
+                        <div class="task-item ${chave} ${classeFeito}" onclick="analisarIA(${indexOriginal}, event, '${niveis[chave].nome}')">
+                            <div class="score-circle">${numRank}</div>
                             <div class="task-info">
                                 <strong>${t.nome} ${badgeFixo}</strong>
                                 <div class="stats-container">
@@ -326,21 +322,33 @@
     }
 
     function togglePanel(id) { let p = document.getElementById(id); let act = p.classList.contains('active'); document.querySelectorAll('.panel').forEach(x => x.classList.remove('active')); if(!act) p.classList.add('active'); }
-    function adicionarTarefaUnica() { let nome = document.getElementById("nome").value; if(!nome) return; let dia = document.getElementById("dia").value; let turno = document.getElementById("turno").value; tarefas.push({ nome, prazoOrig: dia === "sem prazo" ? "sem prazo" : `${dia} ${turno}`, complexidade: parseFloat(document.getElementById("complexidade").value) || 6, is: parseFloat(document.getElementById("is").value) || 6, pe: parseFloat(document.getElementById("pe").value) || 0, eventoFixo: document.getElementById("eventoFixo").checked, feito: false }); document.getElementById("nome").value = ""; togglePanel('panelAdd'); salvarERenderizar(); }
-    function importarLote() { let texto = document.getElementById("bulkText").value; texto.split('\n').forEach(l => { let p = l.split('|').map(x => x.trim()); if(p.length >= 6) tarefas.push({ nome: p[0], prazoOrig: p[1], complexidade: parseEscala(p[2]), is: parseEscala(p[3]), pe: p[4]==="-"?0:parseFloat(p[4])||0, eventoFixo: p[5].toLowerCase()==="sim", feito: false }); }); document.getElementById("bulkText").value = ""; togglePanel('panelImport'); salvarERenderizar(); }
-    
-    // O event.stopPropagation() impede que o clique no botão ative o modal da IA
+    function adicionarTarefaUnica() { 
+        let nome = document.getElementById("nome").value; if(!nome) return; 
+        let dia = document.getElementById("dia").value; 
+        let turno = document.getElementById("turno").value; 
+        tarefas.push({ 
+            nome, 
+            prazoOrig: dia === "sem prazo" ? "sem prazo" : `${dia} ${turno}`, 
+            complexidade: parseFloat(document.getElementById("complexidade").value) || 6, 
+            is: parseFloat(document.getElementById("is").value) || 6, 
+            pe: parseFloat(document.getElementById("pe").value) || 0, 
+            eventoFixo: document.getElementById("eventoFixo").checked, 
+            feito: false 
+        }); 
+        document.getElementById("nome").value = ""; salvarERenderizar(); 
+    }
+
     function removerTarefa(i, event) { event.stopPropagation(); tarefas.splice(i, 1); salvarERenderizar(); }
     function toggleFeito(i, event) { event.stopPropagation(); tarefas[i].feito = !tarefas[i].feito; salvarERenderizar(); } 
     function limparTudo() { if(confirm("Apagar todas as tarefas?")) { tarefas = []; salvarERenderizar(); } }
 
-    // --- FUNÇÕES DA IA ---
     function fecharModal(e) { if(e.target.id === 'aiModal') document.getElementById('aiModal').classList.remove('active'); }
     function fecharModalClick() { document.getElementById('aiModal').classList.remove('active'); }
 
-async function analisarIA(index, event) {
+    // --- LOGICA IA TURBINADA ---
+    async function analisarIA(index, event, nivelNome) {
         if (!apiKey) {
-            alert("⚠️ Configure sua API Key da Groq primeiro.");
+            alert("⚠️ Configure sua chave Groq no botão 🤖.");
             togglePanel('panelConfig');
             return;
         }
@@ -348,32 +356,28 @@ async function analisarIA(index, event) {
         const t = tarefas[index];
         if (t.feito) return; 
 
-        // Descobrir em qual nível a tarefa está para passar para a IA
-        const score = t.score;
-        let nivelNome = "Em Espera";
-        if (score >= 50) nivelNome = "SOBREVIVÊNCIA (CRÍTICO)";
-        else if (score >= 20) nivelNome = "COMPROMISSO PESADO";
-        else if (score >= 5) nivelNome = "NO RADAR";
-
         const modal = document.getElementById('aiModal');
         const content = document.getElementById('aiContent');
         modal.classList.add('active');
-        content.innerHTML = '<div class="loader"></div><p style="text-align:center; color:var(--text-muted);">Decifrando prioridades...</p>';
+        content.innerHTML = '<div class="loader"></div>';
 
-        // PROMPT TURBINADO COM PERSONALIDADE
+        // Prompt com muito mais "personalidade" e dados cruzados
         const promptText = `
-        ANÁLISE DE MISSÃO:
-        - TAREFA: "${t.nome}"
-        - STATUS: Nível de ${nivelNome} (Score: ${t.score.toFixed(1)})
-        - DADOS: Complexidade ${t.complexidade}/9, Importância ${t.is}/9, Estresse ${t.pe}/10, Prazo: ${t.prazoOrig}.
-
-        INSTRUÇÕES:
-        Aja como um estrategista militar de produtividade. Não seja genérico. 
-        1. Analise o "conflito" entre os dados (Ex: Se a importância é alta mas o estresse é baixo, você está negligenciando algo vital. Se o estresse é alto mas a importância é baixa, você está tendo um ataque de pânico por nada).
-        2. Dê um veredito real: "Ataque agora", "Prepare o terreno" ou "Ignore por enquanto".
-        3. Diga EXATAMENTE como começar (o primeiro micro-passo).
+        Você é um estrategista de produtividade elite, direto, levemente irônico e motivador. 
+        O usuário é um 'comandante' em campo de batalha. Analise a missão:
         
-        Seja sarcástico se necessário, mas muito tático. Máximo de 4 frases. Use negrito.
+        - Missão (Nome): ${t.nome}
+        - Classificação atual: Nível de ${nivelNome} (isso indica a gravidade no rank).
+        - Dados Técnicos: Complexidade ${t.complexidade}/9, Importância ${t.is}/9, Estresse ${t.pe}/10.
+        - Urgência Temporal: ${t.prazoOrig} (Peso matemático: ${t.prazoAtualizado}).
+        - É um Evento Fixo? ${t.eventoFixo ? 'SIM, não tem como fugir.' : 'Não.'}
+
+        REGRAS DE RESPOSTA:
+        1. Comece com uma saudação tática curta (ex: 'Escuta aqui, comandante', 'Olha só o que temos...').
+        2. Analise se os números batem com o nome da tarefa. Se a complexidade for baixa, use expressões como 'mamão com mel', 'passeio no parque'. Se for alta, seja sério.
+        3. Dê uma ordem direta: Atacar agora, planejar ou ignorar por enquanto.
+        4. Use no máximo 3 frases. Seja 'afiado' e humano, nada de clichês de robô.
+        Use negrito no veredito.
         `;
 
         try {
@@ -386,20 +390,14 @@ async function analisarIA(index, event) {
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [
-                        { 
-                            role: "system", 
-                            content: "Você é um comandante tático frio e ultra-eficiente. Você odeia procrastinação e respostas óbvias. Sua missão é analisar os dados matemáticos da tarefa e dar um choque de realidade no usuário." 
-                        },
+                        { role: "system", content: "Você é um mentor tático e ágil. Não dê respostas genéricas. Use gírias de produtividade e seja muito específico sobre os dados recebidos." },
                         { role: "user", content: promptText }
                     ],
-                    temperature: 0.8 // Aumentado para dar mais "vida" e personalidade à resposta
+                    temperature: 0.8 // Mais criatividade
                 })
             });
 
-            if (!response.ok) {
-                const erroData = await response.json();
-                throw new Error(erroData.error?.message || "Erro na Groq");
-            }
+            if (!response.ok) throw new Error("Falha na Groq");
 
             const data = await response.json();
             const respostaIA = data.choices[0].message.content;
@@ -409,12 +407,32 @@ async function analisarIA(index, event) {
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
         } catch (error) {
-            content.innerHTML = `<p style="color: var(--danger); font-weight: bold;">⚠️ Erro na Estratégia</p><p style="font-size: 0.85rem; color: var(--text-muted);">${error.message}</p>`;
+            content.innerHTML = `<p style="color: var(--danger);">⚠️ Erro: ${error.message}</p>`;
         }
     }
-    window.onload = () => { aplicarTema(); atualizarBotaoOrdem(); salvarERenderizar(); };
 
-    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(reg => { reg.onupdatefound = () => { const installingWorker = reg.installing; installingWorker.onstatechange = () => { if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) { window.location.reload(); } }; }; }); }); }
+    function importarLote() {
+        let texto = document.getElementById("bulkText").value;
+        texto.split('\n').forEach(l => {
+            let p = l.split('|').map(x => x.trim());
+            if(p.length >= 6) {
+                tarefas.push({
+                    nome: p[0],
+                    prazoOrig: p[1],
+                    complexidade: parseEscala(p[2]),
+                    is: parseEscala(p[3]),
+                    pe: p[4]==="-" ? 0 : parseFloat(p[4]) || 0,
+                    eventoFixo: p[5].toLowerCase() === "sim",
+                    feito: false
+                });
+            }
+        });
+        document.getElementById("bulkText").value = "";
+        togglePanel('panelImport');
+        salvarERenderizar();
+    }
+
+    window.onload = () => { aplicarTema(); atualizarBotaoOrdem(); salvarERenderizar(); };
 </script>
 </body>
 </html>
