@@ -337,7 +337,7 @@
     function fecharModal(e) { if(e.target.id === 'aiModal') document.getElementById('aiModal').classList.remove('active'); }
     function fecharModalClick() { document.getElementById('aiModal').classList.remove('active'); }
 
- // --- FUNÇÃO DE IA: COM CONTEXTO DE HORÁRIO E MAIS LIBERDADE ---
+    // --- FUNÇÃO DE IA: GEMINI 2.5 FLASH COM VIBE HUMANA ---
     async function analisarTarefaComIA(index) {
         if (!apiKey) {
             alert("⚠️ Configure sua API Key do Gemini no botão 🤖.");
@@ -351,7 +351,7 @@
         const modal = document.getElementById('aiModal');
         const content = document.getElementById('aiContent');
         modal.classList.add('active');
-        content.innerHTML = '<div class="loader"></div><p style="text-align:center; color:var(--text-muted);">O Gemini está sentindo a vibe da tarefa...</p>';
+        content.innerHTML = '<div class="loader"></div><p style="text-align:center; color:var(--text-muted);">O Gemini 2.5 está lendo a tática...</p>';
 
         const MAX_PRAZO = 3.8;
         const MAX_COMPLEXIDADE = 9;
@@ -369,14 +369,25 @@
         else if (t.score >= 5) nivelNome = "Nível 3 - No Radar";
         else nivelNome = "Nível 4 - Em Espera";
 
-        // Pegando o horário atual do usuário
+        // LÓGICA DE HORÁRIO DINÂMICO
         const horaAtual = new Date().getHours();
+        let contextoHorario = "";
+        if (horaAtual >= 5 && horaAtual < 12) {
+            contextoHorario = "Manhã (Ideal para saudações como 'se organizando pro dia chefe?', 'cedo hein, bom momento pra focar')";
+        } else if (horaAtual >= 12 && horaAtual < 18) {
+            contextoHorario = "Tarde (Ideal para 'metade do dia já foi', 'depois do almoço bate a preguiça mas vamo lá')";
+        } else if (horaAtual >= 18 && horaAtual < 22) {
+            contextoHorario = "Noite (Ideal para 'fim de expediente?', 'último gás do dia chefe')";
+        } else {
+            contextoHorario = "Madrugada (Ideal para 'vai virar a noite? kkkk', 'tarde já chefe, descansa pra amanhã se não for urgente')";
+        }
 
-        const promptText = `
+        const promptData = `
+        Contexto do momento: Agora é ${contextoHorario}. Faça um comentário rápido e natural sobre o horário.
+        
         Tarefa a ser analisada:
         - Nome: "${t.nome}"
         - Categoria Atual: ${nivelNome}
-        - Hora de agora: ${horaAtual}h
         - Prazo (Urgência): ${pPerc}% (${t.prazoOrig})
         - Complexidade: ${cPerc}%
         - Importância: ${isPerc}%
@@ -389,58 +400,65 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: promptText }] }],
+                    contents: [{ parts: [{ text: promptData }] }],
                     system_instruction: { 
-                        parts: [{ text: `Você é um mentor de produtividade casual, direto, engraçado e que parece um amigo próximo.
+                        parts: [{ text: `Você é um mentor de produtividade casual, direto, um pouco sarcástico e super parceiro (quase como um amigo acompanhando o dia do usuário). 
+                        
+                        SUA MISSÃO E VIBE:
+                        - Pegue a essência dos dados, mas NUNCA repita os exemplos que eu te der abaixo. INVENTE suas próprias frases na mesma "vibe".
+                        - Jamais repita os números, porcentagens ou o nome da tarefa. Você interpreta os dados, não os lê de volta.
+                        - Fale em segunda pessoa (você/teu/chefe).
+                        - Pode usar de 6 a 7 frases curtas no total. Desenvolva bem a ideia sem parecer um robô.
+                        
+                        GUIA DE INTERPRETAÇÃO (Capte a ideia, crie o seu próprio texto):
+                        1. SOBRE O HORÁRIO: Sempre comece com uma saudação que faça sentido com o período do dia que vou te informar.
+                        
+                        2. SE O PRAZO É 0% (Sem Prazo):
+                           - Se o Nível for 1 ou 2, dê um puxão de orelha brabo: avise que é uma bomba-relógio e mandar resolver logo.
+                           - Se for Nível 4, seja compreensivo e diga que pode ficar pra depois sem peso na consciência.
+                           
+                        3. LÓGICA DE DIFICULDADE (Olhe Complexidade e Pontos de Estresse):
+                           - Abaixo de 50%: Zombe de forma amigável dizendo que é muito fácil, pede pra matar logo pra não acumular.
+                           - 50% a 60%: Diga que é tranquilo, que com um pouquinho de foco sai rapidinho.
+                           - 60% a 70%: Avise que é algo médio, que vai precisar de um café e evitar distrações.
+                           - Acima de 70%: Dê um choque de realidade com humor. Admita que a pedreira é grande e vai dar trabalho, mas que o usuário dá conta se for com calma.
 
-                        SUAS DIRETRIZES DE COMPORTAMENTO (A VIBE):
-                        1. INTERAÇÃO COM O HORÁRIO (${horaAtual}h):
-                           Sempre comece comentando o horário de forma natural. 
-                           - Se for manhã (05h às 11h): solte algo na vibe de "organizando o dia cedo, chefe?" ou "bom momento pra focar".
-                           - Se for tarde (12h às 17h): mande algo sobre manter o ritmo ou lidar com a preguiça pós-almoço.
-                           - Se for noite (18h às 21h): pergunte se ainda tem energia ou se já tá na hora de desacelerar.
-                           - Se passar das 22h ou madrugada: reaja com surpresa. Brinque perguntando "vai virar a noite, chefe? kkkk" ou mande a real de que tá na hora de dormir e descansar pra amanhã.
-                           IMPORTANTE: INVENTE SUAS PRÓPRIAS FRASES. Não seja um robô repetindo esses exemplos exatos.
-
-                        2. ANÁLISE DE DIFICULDADE (Complexidade e Estresse):
-                           - < 50%: Transmita que é fácil.
-                           - 50% a 70%: Transmita que é moderado, exige foco mas flui.
-                           - > 70%: Transmita que vai dar trabalho e exige estratégia.
-                           IMPORTANTE: Use gírias informais variadas a cada resposta. Pare de repetir sempre as mesmas expressões. Mude o vocabulário, surpreenda o usuário.
-
-                        3. PRAZO ZERO (0%):
-                           - Se o Nível for 1 ou 2, dê uma bronca tática leve: não tem prazo mas tá travando a vida, precisa resolver.
-                           - Se for Nível 4, libere o usuário pra postergar sem peso na consciência.
-
-                        REGRAS DE FORMATAÇÃO:
-                        - Fale em segunda pessoa (você).
-                        - Não cite o nome da tarefa nem repita os números frios (o usuário já tá vendo eles na tela). Apenas interprete o cenário e dê a dica.
-                        - Seja livre no tamanho: escreva um parágrafo natural de 3 a 7 frases.
-                        - Destaque os conselhos principais em **negrito**.` }] 
+                        Destaque em **negrito** apenas a principal dica tática ou ação que o usuário deve tomar.` }] 
                     },
                     generationConfig: { 
-                        temperature: 0.95 // Aumentado para gerar respostas muito mais criativas e imprevisíveis
+                        temperature: 0.9 // Aumentado para dar ainda mais criatividade e variações
                     }
                 })
             });
 
-            if (!response.ok) { 
-                let msg = "Erro API"; 
-                try { const d = await resp.json(); msg = d.error?.message || msg; } 
-                catch { msg = await resp.text(); } 
-                throw new Error(msg); 
+            if (!response.ok) {
+                let mensagemErro = "Erro na API do Gemini";
+                try {
+                    const erroData = await response.json();
+                    mensagemErro = erroData.error?.message || mensagemErro;
+                } catch {
+                    mensagemErro = await response.text(); 
+                }
+                throw new Error(mensagemErro);
             }
 
-            const data = await resp.json(); 
-            const txt = data.candidates?.[0]?.content?.parts?.[0]?.text || "Gemini ficou em silêncio...";
+            const data = await response.json();
+            const respostaIA = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sem resposta da IA.";
             
-            content.innerHTML = txt
-                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            const safeText = respostaIA
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
                 .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
                 .replace(/\n/g, "<br>");
 
-        } catch (err) { 
-            content.innerHTML = `<p style="color:var(--danger); font-weight:bold;">⚠️ Erro de Conexão</p><p style="font-size:0.8rem;">${err.message}</p>`; 
+            content.innerHTML = safeText;
+
+        } catch (error) {
+            content.innerHTML = `
+                <p style="color: var(--danger); font-weight: bold;">⚠️ Erro de Conexão</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">${error.message}</p>
+            `;
         }
     }
 
