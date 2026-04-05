@@ -338,7 +338,7 @@
     function fecharModal(e) { if(e.target.id === 'aiModal') document.getElementById('aiModal').classList.remove('active'); }
     function fecharModalClick() { document.getElementById('aiModal').classList.remove('active'); }
 
-    async function analisarIA(index, event) {
+async function analisarIA(index, event) {
         if (!apiKey) {
             alert("⚠️ Por favor, configure sua API Key do Gemini no botão 🤖 primeiro.");
             togglePanel('panelConfig');
@@ -346,7 +346,7 @@
         }
 
         const t = tarefas[index];
-        if (t.feito) return; // Não analisa tarefas já feitas
+        if (t.feito) return; 
 
         const modal = document.getElementById('aiModal');
         const content = document.getElementById('aiContent');
@@ -377,18 +377,23 @@
                 })
             });
 
-            if (!response.ok) throw new Error("Erro na API (Verifique sua chave)");
+            // Se o Google recusar, extraímos o motivo exato do erro!
+            if (!response.ok) {
+                const erroDetalhado = await response.json();
+                console.error("Erro do Google:", erroDetalhado);
+                throw new Error(erroDetalhado.error?.message || "Erro desconhecido na API do Google");
+            }
             
             const data = await response.json();
             const respostaIA = data.candidates[0].content.parts[0].text;
             
-            // Converte quebras de linha em <br> e **negrito** em <strong>
             content.innerHTML = respostaIA
                 .replace(/\n/g, '<br>')
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
         } catch (error) {
-            content.innerHTML = `<p style="color: var(--danger);">⚠️ Erro ao contatar a IA: ${error.message}</p>`;
+            // Agora o erro exato vai aparecer na tela do popup
+            content.innerHTML = `<p style="color: var(--danger); font-weight: bold;">⚠️ Erro de Conexão</p><p style="font-size: 0.85rem; color: var(--text-muted);">${error.message}</p><p style="font-size: 0.8rem; margin-top: 10px;">Verifique se copiou a chave certa no botão 🤖.</p>`;
         }
     }
 
