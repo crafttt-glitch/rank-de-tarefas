@@ -337,8 +337,7 @@
     function fecharModal(e) { if(e.target.id === 'aiModal') document.getElementById('aiModal').classList.remove('active'); }
     function fecharModalClick() { document.getElementById('aiModal').classList.remove('active'); }
 
-    // --- FUNÇÃO DE IA: AGORA CONECTADA AO GEMINI 2.0 FLASH LITE ---
-   // --- FUNÇÃO DE IA: AGORA CONECTADA AO GEMINI 2.5 FLASH ---
+  // --- FUNÇÃO DE IA: AGORA CONECTADA AO GEMINI 2.5 FLASH ---
     async function analisarTarefaComIA(index) {
         if (!apiKey) {
             alert("⚠️ Configure sua API Key do Gemini no botão 🤖.");
@@ -370,23 +369,34 @@
         else if (t.score >= 5) nivelNome = "Nível 3 - No Radar";
         else nivelNome = "Nível 4 - Em Espera";
 
-        const promptText = `Você é um mentor de produtividade casual, direto e engraçado. 
+        const promptText = `
+        Você é um mentor de produtividade casual, direto e engraçado. 
                             Siga RIGOROSAMENTE esta classificação baseada nos valores de Complexidade e Estresse que eu te passar:
                             
                             1. SE PRAZO É 0% (Sem Prazo):
                                - Se o Nível for 1 ou 2, dê um alerta sério: "tá sem prazo mas tá no topo, resolve logo".
-                               - Se for Nível 4, diga que pode postergar de boa.
+                               - Se for Nível 4, diga que pode esperar postergar ou ficar pra depois, coisa do tipo.
                                
                             2. LÓGICA DE DIFICULDADE (Olhe Complexidade e Estresse):
-                               - Abaixo de 50%: "Mamão com mel", "suave", diz pra matar logo sem drama.
-                               - 50% a 60%: "Tranquilo", diz que vai rápido se não enrolar.
-                               - 60% a 70%: "Médio", exige um café e foco.
-                               - Acima de 70%: Diga que não vai ser tão fácil, vai dar um trabalhinho, kkkk, mas o usuário encara.
+                               - Abaixo de 50%: "Mamão com mel", "suave", diz pra matar logo sem drama, coisa assim.
+                               - 50% a 60%: "Tranquilo", diz que vai rápido se não enrolar, coisa assim.
+                               - 60% a 70%: "Médio", exige um café e foco ou coisa assim.
+                               - Acima de 70%: Diga que não vai ser tão fácil, vai dar um trabalhinho, kkkk, mas o usuário encara, coisa assim.
 
                             REGRAS DE OURO:
                             - Não repita os números/porcentagens (o usuário já vê as barras).
                             - Fale em segunda pessoa (você).
-                            - Máximo 3 frases curtas. Use **negrito** para destacar a ação principal.`;
+                            - Máximo 3 frases curtas. Use **negrito** para destacar a ação principal.
+
+        Tarefa a ser analisada:
+        - Nome: "${t.nome}"
+        - Categoria Atual: ${nivelNome}
+        - Prazo (Urgência): ${pPerc}% (${t.prazoOrig})
+        - Complexidade: ${cPerc}%
+        - Importância: ${isPerc}%
+        - Estresse (PE): ${pePerc}%
+        - Score Total: ${t.score.toFixed(0)}
+        `;
 
         try {
             // Chamada apontando para o gemini-2.5-flash
