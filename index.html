@@ -14,7 +14,6 @@
             --border-color: #e2e8f0; --primary: #3b82f6; --primary-hover: #2563eb;
             --success: #10b981; --danger: #ef4444; --purple: #8b5cf6;
             --card-bg: #ffffff; --input-bg: #f8fafc;
-            
             --lvl1-bg: #fef2f2; --lvl1-border: #fca5a5; --lvl1-text: #b91c1c;
             --lvl2-bg: #fff7ed; --lvl2-border: #fdba74; --lvl2-text: #c2410c;
             --lvl3-bg: #f0fdf4; --lvl3-border: #86efac; --lvl3-text: #15803d;
@@ -24,7 +23,6 @@
         body.dark-mode {
             --bg-body: #0f172a; --text-main: #e2e8f0; --text-muted: #94a3b8;
             --border-color: #334155; --card-bg: #1e293b; --input-bg: #334155;
-            
             --lvl1-bg: rgba(248, 113, 113, 0.15); --lvl1-border: #f87171; --lvl1-text: #fca5a5;
             --lvl2-bg: rgba(251, 146, 60, 0.15); --lvl2-border: #fb923c; --lvl2-text: #fdba74;
             --lvl3-bg: rgba(52, 211, 153, 0.15); --lvl3-border: #34d399; --lvl3-text: #6ee7b7;
@@ -37,7 +35,6 @@
         .header h1 { font-size: 1.5rem; margin: 0; display: flex; align-items: center; gap: 10px; }
         
         .action-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; background: var(--card-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 5px 10px -3px rgba(0,0,0,0.05); }
-        
         .btn { font-family: inherit; font-weight: 600; font-size: 0.85rem; padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .btn-outline { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); }
         .btn-primary { background: var(--primary); color: #fff; }
@@ -51,12 +48,10 @@
         input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2); }
 
         .level-header { font-size: 0.85rem; font-weight: 800; margin: 24px 0 10px 0; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; opacity: 0.8; }
-        
         .task-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 8px; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-left-width: 4px; transition: all 0.2s; }
         .task-item:not(.feito):hover { transform: scale(1.005); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
         .score-circle { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); transition: 0.3s; }
-        
         .task-info { flex-grow: 1; width: 100%; transition: 0.3s; }
         .task-info strong { font-size: 1rem; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; transition: 0.3s; }
         
@@ -72,47 +67,37 @@
         
         .task-actions { display: flex; gap: 4px; }
         .btn-icon { background: transparent; border: none; cursor: pointer; padding: 6px; border-radius: 6px; font-size: 0.9rem; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .btn-check { color: var(--success); }
-        .btn-check:hover { background: rgba(52, 211, 153, 0.1); }
-        .btn-delete { color: var(--text-muted); }
-        .btn-delete:hover { color: var(--danger); background: rgba(248, 113, 113, 0.1); }
+        .btn-check { color: var(--success); } .btn-check:hover { background: rgba(52, 211, 153, 0.1); }
+        .btn-ai { color: var(--purple); } .btn-ai:hover { background: rgba(167, 139, 250, 0.1); }
+        .btn-delete { color: var(--text-muted); } .btn-delete:hover { color: var(--danger); background: rgba(248, 113, 113, 0.1); }
 
-        /* --- ESTILOS DE TAREFA CONCLUÍDA ("FEITO") --- */
-        .task-item.feito {
-            opacity: 0.45; /* Desligado */
-            padding: 8px 14px; /* Menor */
-            filter: grayscale(80%);
-            background: transparent;
-        }
-        .task-item.feito .stats-container {
-            display: none; /* Esconde as barras de status para encolher */
-        }
-        .task-item.feito strong {
-            text-decoration: line-through; /* Riscado */
-            color: var(--text-muted);
-            margin-bottom: 0;
-        }
-        .task-item.feito .score-circle {
-            width: 28px; height: 28px; font-size: 0.8rem; /* Bolinha menor */
-        }
+        .task-item.feito { opacity: 0.45; padding: 8px 14px; filter: grayscale(80%); background: transparent; }
+        .task-item.feito .stats-container { display: none; }
+        .task-item.feito strong { text-decoration: line-through; color: var(--text-muted); margin-bottom: 0; }
+        .task-item.feito .score-circle { width: 28px; height: 28px; font-size: 0.8rem; }
 
-        .nivel-1 { border-left-color: var(--lvl1-border); }
-        .nivel-1 .score-circle { background-color: var(--lvl1-bg); color: var(--lvl1-text); border: 1px solid var(--lvl1-border); }
-        .nivel-2 { border-left-color: var(--lvl2-border); }
-        .nivel-2 .score-circle { background-color: var(--lvl2-bg); color: var(--lvl2-text); border: 1px solid var(--lvl2-border); }
-        .nivel-3 { border-left-color: var(--lvl3-border); }
-        .nivel-3 .score-circle { background-color: var(--lvl3-bg); color: var(--lvl3-text); border: 1px solid var(--lvl3-border); }
-        .nivel-4 { border-left-color: var(--lvl4-border); }
-        .nivel-4 .score-circle { background-color: var(--lvl4-bg); color: var(--lvl4-text); border: 1px solid var(--lvl4-border); }
+        .nivel-1 { border-left-color: var(--lvl1-border); } .nivel-1 .score-circle { background-color: var(--lvl1-bg); color: var(--lvl1-text); border: 1px solid var(--lvl1-border); }
+        .nivel-2 { border-left-color: var(--lvl2-border); } .nivel-2 .score-circle { background-color: var(--lvl2-bg); color: var(--lvl2-text); border: 1px solid var(--lvl2-border); }
+        .nivel-3 { border-left-color: var(--lvl3-border); } .nivel-3 .score-circle { background-color: var(--lvl3-bg); color: var(--lvl3-text); border: 1px solid var(--lvl3-border); }
+        .nivel-4 { border-left-color: var(--lvl4-border); } .nivel-4 .score-circle { background-color: var(--lvl4-bg); color: var(--lvl4-text); border: 1px solid var(--lvl4-border); }
 
         .grid-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 10px; }
         .grid-row.first { grid-template-columns: 2fr 1fr 1fr; }
         
-        @media (max-width: 600px) { 
-            .grid-row.first { grid-template-columns: 1fr; } 
-            .btn-danger-outline { margin-left: 0; width: 100%; justify-content: center; } 
-            .stats-container { grid-template-columns: repeat(2, 1fr); gap: 6px; } 
-        }
+        /* Modal do Popup da IA */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(3px); }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--border-color); width: 90%; max-width: 450px; border-radius: 16px; padding: 24px; position: relative; transform: translateY(20px); transition: 0.3s; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .modal-header h3 { margin: 0; color: var(--purple); display: flex; align-items: center; gap: 8px; font-size: 1.2rem; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; padding: 0; line-height: 1; }
+        .modal-body { font-size: 0.95rem; line-height: 1.5; color: var(--text-main); min-height: 80px; }
+        .loading-ai { display: flex; align-items: center; gap: 10px; color: var(--text-muted); font-weight: 600; }
+        .loading-spinner { width: 18px; height: 18px; border: 3px solid var(--border-color); border-top-color: var(--purple); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 600px) { .grid-row.first { grid-template-columns: 1fr; } .btn-danger-outline { margin-left: 0; width: 100%; justify-content: center; } .stats-container { grid-template-columns: repeat(2, 1fr); gap: 6px; } }
     </style>
 </head>
 <body class="dark-mode">
@@ -120,7 +105,10 @@
 <div class="container">
     <div class="header">
         <h1>🥇 Rank de Prioridade</h1>
-        <button class="btn btn-outline" onclick="toggleTema()" id="btnTema">☀️</button>
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-outline" onclick="configurarAPI()" title="Configurar Inteligência Artificial">⚙️ API IA</button>
+            <button class="btn btn-outline" onclick="toggleTema()" id="btnTema">☀️</button>
+        </div>
     </div>
 
     <div class="action-bar">
@@ -133,12 +121,7 @@
     <div id="panelAdd" class="panel">
         <div class="grid-row first">
             <input type="text" id="nome" placeholder="O que fazer?">
-            <select id="dia">
-                <option value="segunda">Segunda</option><option value="terça">Terça</option>
-                <option value="quarta">Quarta</option><option value="quinta">Quinta</option>
-                <option value="sexta">Sexta</option><option value="sábado">Sábado</option>
-                <option value="domingo">Domingo</option><option value="sem prazo">Sem Prazo</option>
-            </select>
+            <select id="dia"><option value="segunda">Segunda</option><option value="terça">Terça</option><option value="quarta">Quarta</option><option value="quinta">Quinta</option><option value="sexta">Sexta</option><option value="sábado">Sábado</option><option value="domingo">Domingo</option><option value="sem prazo">Sem Prazo</option></select>
             <select id="turno"><option value="manhã">Manhã</option><option value="tarde">Tarde</option><option value="noite">Noite</option></select>
         </div>
         <div class="grid-row">
@@ -156,51 +139,35 @@
     <div id="taskList"></div>
 </div>
 
+<div class="modal-overlay" id="aiModal" onclick="fecharModalIA(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3>🤖 Estrategista de Tarefas</h3>
+            <button class="modal-close" onclick="fecharModalIA(true)">&times;</button>
+        </div>
+        <div class="modal-body" id="aiResponse">
+            </div>
+    </div>
+</div>
+
 <script>
     let tarefas = JSON.parse(localStorage.getItem('minhasTarefas')) || [];
     let ordenarPorComplexidade = JSON.parse(localStorage.getItem('prefOrdem')) || false;
     let modoEscuro = localStorage.getItem('prefTema') === null ? true : JSON.parse(localStorage.getItem('prefTema'));
-
-    // Garantir que tarefas antigas tenham a propriedade 'feito'
     tarefas.forEach(t => { if(t.feito === undefined) t.feito = false; });
 
-    function toggleTema() {
-        modoEscuro = !modoEscuro;
-        localStorage.setItem('prefTema', JSON.stringify(modoEscuro));
-        aplicarTema();
-    }
-
+    function toggleTema() { modoEscuro = !modoEscuro; localStorage.setItem('prefTema', JSON.stringify(modoEscuro)); aplicarTema(); }
     function aplicarTema() {
         const btn = document.getElementById("btnTema");
-        if (modoEscuro) {
-            document.body.classList.add('dark-mode');
-            btn.innerText = "☀️";
-            document.getElementById("theme-color").setAttribute("content", "#0f172a");
-        } else {
-            document.body.classList.remove('dark-mode');
-            btn.innerText = "🌙";
-            document.getElementById("theme-color").setAttribute("content", "#3b82f6");
-        }
+        if (modoEscuro) { document.body.classList.add('dark-mode'); btn.innerText = "☀️"; document.getElementById("theme-color").setAttribute("content", "#0f172a"); } 
+        else { document.body.classList.remove('dark-mode'); btn.innerText = "🌙"; document.getElementById("theme-color").setAttribute("content", "#3b82f6"); }
     }
 
-    function toggleOrdenacao() {
-        ordenarPorComplexidade = !ordenarPorComplexidade;
-        localStorage.setItem('prefOrdem', JSON.stringify(ordenarPorComplexidade));
-        atualizarBotaoOrdem();
-        salvarERenderizar();
-    }
-
+    function toggleOrdenacao() { ordenarPorComplexidade = !ordenarPorComplexidade; localStorage.setItem('prefOrdem', JSON.stringify(ordenarPorComplexidade)); atualizarBotaoOrdem(); salvarERenderizar(); }
     function atualizarBotaoOrdem() {
         const btn = document.getElementById("btnOrdenar");
-        if(ordenarPorComplexidade) {
-            btn.innerHTML = `🟢 Ordem: Fáceis`;
-            btn.style.backgroundColor = "var(--success)"; btn.style.borderColor = "var(--success)";
-            btn.style.color = "#0f172a"; 
-        } else {
-            btn.innerHTML = `🔄 Ordem: Score`;
-            btn.style.backgroundColor = "var(--purple)"; btn.style.borderColor = "var(--purple)";
-            btn.style.color = "white";
-        }
+        if(ordenarPorComplexidade) { btn.innerHTML = `🟢 Ordem: Fáceis`; btn.style.backgroundColor = "var(--success)"; btn.style.borderColor = "var(--success)"; btn.style.color = "#0f172a"; } 
+        else { btn.innerHTML = `🔄 Ordem: Score`; btn.style.backgroundColor = "var(--purple)"; btn.style.borderColor = "var(--purple)"; btn.style.color = "white"; }
     }
 
     function parsePrazo(texto) {
@@ -241,17 +208,15 @@
         let niveis = { "nivel-1": { nome: "Sobrevivência", icon: "🔥", itens: [] }, "nivel-2": { nome: "Compromissos", icon: "⚠️", itens: [] }, "nivel-3": { nome: "No Radar", icon: "👀", itens: [] }, "nivel-4": { nome: "Em Espera", icon: "☕", itens: [] } };
         tarefas.forEach(t => { if (t.score >= 50) niveis["nivel-1"].itens.push(t); else if (t.score >= 20) niveis["nivel-2"].itens.push(t); else if (t.score >= 5) niveis["nivel-3"].itens.push(t); else niveis["nivel-4"].itens.push(t); });
 
-        // Nova Lógica de Ordenação: Primeiro vê se tá feito (joga pro final), depois ordena normal
         for (let chave in niveis) { 
             niveis[chave].itens.sort((a, b) => { 
-                if (a.feito !== b.feito) return a.feito ? 1 : -1; // Concluídas vão para baixo
+                if (a.feito !== b.feito) return a.feito ? 1 : -1;
                 if (ordenarPorComplexidade && a.complexidade !== b.complexidade) return a.complexidade - b.complexidade; 
                 return b.score - a.score; 
             }); 
         }
 
-        let htmlFinal = "";
-        let globalRank = 1;
+        let htmlFinal = ""; let globalRank = 1;
 
         for (let chave in niveis) {
             if (niveis[chave].itens.length > 0) {
@@ -260,8 +225,8 @@
                     let indexOriginal = tarefas.indexOf(t);
                     let badgeFixo = t.eventoFixo ? `<span class="badge fixed">📌 Fixo</span>` : '';
                     let classeFeito = t.feito ? 'feito' : '';
-                    let iconeFeito = t.feito ? '↩️' : '✔️'; // Botão vira Desfazer se estiver feito
-                    let numRank = t.feito ? '-' : `#${globalRank}`; // Se tiver feito, tira o número
+                    let iconeFeito = t.feito ? '↩️' : '✔️'; 
+                    let numRank = t.feito ? '-' : `#${globalRank}`;
                     
                     let percP = Math.min(100, Math.max(0, Math.round((t.prazoAtualizado / 3.8) * 100))); 
                     let percC = Math.round((t.complexidade / 9) * 100); 
@@ -274,35 +239,20 @@
                             <div class="task-info">
                                 <strong>${t.nome} ${badgeFixo}</strong>
                                 <div class="stats-container">
-                                    <div class="stat-box" title="Prazo Original: ${t.prazoOrig}">
-                                        <span class="stat-label">⏰ Praz</span>
-                                        <div class="stat-bar"><div class="stat-fill" style="width:${percP}%; background:var(--primary)"></div></div>
-                                        <span class="stat-percent">${percP}%</span>
-                                    </div>
-                                    <div class="stat-box" title="Complexidade">
-                                        <span class="stat-label">⚙️ Comp</span>
-                                        <div class="stat-bar"><div class="stat-fill" style="width:${percC}%; background:var(--purple)"></div></div>
-                                        <span class="stat-percent">${percC}%</span>
-                                    </div>
-                                    <div class="stat-box" title="Importância Subjetiva">
-                                        <span class="stat-label">🎯 Impt</span>
-                                        <div class="stat-bar"><div class="stat-fill" style="width:${percIS}%; background:var(--success)"></div></div>
-                                        <span class="stat-percent">${percIS}%</span>
-                                    </div>
-                                    <div class="stat-box" title="Pontos de Estresse">
-                                        <span class="stat-label">⚡ Estr</span>
-                                        <div class="stat-bar"><div class="stat-fill" style="width:${percPE}%; background:var(--danger)"></div></div>
-                                        <span class="stat-percent">${percPE}%</span>
-                                    </div>
+                                    <div class="stat-box"><span class="stat-label">⏰ Praz</span><div class="stat-bar"><div class="stat-fill" style="width:${percP}%; background:var(--primary)"></div></div><span class="stat-percent">${percP}%</span></div>
+                                    <div class="stat-box"><span class="stat-label">⚙️ Comp</span><div class="stat-bar"><div class="stat-fill" style="width:${percC}%; background:var(--purple)"></div></div><span class="stat-percent">${percC}%</span></div>
+                                    <div class="stat-box"><span class="stat-label">🎯 Impt</span><div class="stat-bar"><div class="stat-fill" style="width:${percIS}%; background:var(--success)"></div></div><span class="stat-percent">${percIS}%</span></div>
+                                    <div class="stat-box"><span class="stat-label">⚡ Estr</span><div class="stat-bar"><div class="stat-fill" style="width:${percPE}%; background:var(--danger)"></div></div><span class="stat-percent">${percPE}%</span></div>
                                 </div>
                             </div>
                             <div class="task-actions">
-                                <button class="btn-icon btn-check" onclick="toggleFeito(${indexOriginal})" title="Marcar como concluída">${iconeFeito}</button>
+                                <button class="btn-icon btn-ai" onclick="analisarComIA(${indexOriginal})" title="Pedir conselho à IA">🤖</button>
+                                <button class="btn-icon btn-check" onclick="toggleFeito(${indexOriginal})" title="Concluir/Desfazer">${iconeFeito}</button>
                                 <button class="btn-icon btn-delete" onclick="removerTarefa(${indexOriginal})" title="Excluir">✖</button>
                             </div>
                         </div>
                     `;
-                    if(!t.feito) globalRank++; // Só sobe o rank de quem não está feito
+                    if(!t.feito) globalRank++; 
                 });
             }
         }
@@ -313,25 +263,90 @@
     function adicionarTarefaUnica() { let nome = document.getElementById("nome").value; if(!nome) return; let dia = document.getElementById("dia").value; let turno = document.getElementById("turno").value; tarefas.push({ nome, prazoOrig: dia === "sem prazo" ? "sem prazo" : `${dia} ${turno}`, complexidade: parseFloat(document.getElementById("complexidade").value) || 6, is: parseFloat(document.getElementById("is").value) || 6, pe: parseFloat(document.getElementById("pe").value) || 0, eventoFixo: document.getElementById("eventoFixo").checked, feito: false }); document.getElementById("nome").value = ""; togglePanel('panelAdd'); salvarERenderizar(); }
     function importarLote() { let texto = document.getElementById("bulkText").value; texto.split('\n').forEach(l => { let p = l.split('|').map(x => x.trim()); if(p.length >= 6) tarefas.push({ nome: p[0], prazoOrig: p[1], complexidade: parseEscala(p[2]), is: parseEscala(p[3]), pe: p[4]==="-"?0:parseFloat(p[4])||0, eventoFixo: p[5].toLowerCase()==="sim", feito: false }); }); document.getElementById("bulkText").value = ""; togglePanel('panelImport'); salvarERenderizar(); }
     function removerTarefa(i) { tarefas.splice(i, 1); salvarERenderizar(); }
-    function toggleFeito(i) { tarefas[i].feito = !tarefas[i].feito; salvarERenderizar(); } // Nova função
+    function toggleFeito(i) { tarefas[i].feito = !tarefas[i].feito; salvarERenderizar(); }
     function limparTudo() { if(confirm("Apagar todas as tarefas?")) { tarefas = []; salvarERenderizar(); } }
 
-    window.onload = () => { aplicarTema(); atualizarBotaoOrdem(); salvarERenderizar(); };
-
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js').then(reg => {
-                reg.onupdatefound = () => {
-                    const installingWorker = reg.installing;
-                    installingWorker.onstatechange = () => {
-                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            window.location.reload();
-                        }
-                    };
-                };
-            });
-        });
+    // --- INTEGRAÇÃO COM GEMINI API ---
+    function configurarAPI() {
+        let chaveAtual = localStorage.getItem('geminiApiKey') || '';
+        let novaChave = prompt("Cole sua API Key do Google Gemini Flash aqui.\nEla ficará salva apenas no seu navegador.", chaveAtual);
+        if (novaChave !== null) {
+            localStorage.setItem('geminiApiKey', novaChave.trim());
+            alert("Chave salva com sucesso!");
+        }
     }
+
+    function fecharModalIA(force = false) {
+        if (force || event.target.id === 'aiModal') {
+            document.getElementById('aiModal').classList.remove('active');
+        }
+    }
+
+    async function analisarComIA(index) {
+        const apiKey = localStorage.getItem('geminiApiKey');
+        if (!apiKey) {
+            alert("Você precisa configurar a API Key primeiro clicando em '⚙️ API IA' no topo da tela.");
+            return;
+        }
+
+        const task = tarefas[index];
+        const modal = document.getElementById('aiModal');
+        const responseBox = document.getElementById('aiResponse');
+        
+        modal.classList.add('active');
+        responseBox.innerHTML = `
+            <div class="loading-ai">
+                <div class="loading-spinner"></div>
+                Analisando a estratégia para "${task.nome}"...
+            </div>
+        `;
+
+        // O Prompt interno (Instruções para a IA)
+        const prompt = `Atue como um coach de produtividade pragmático.
+Tarefa: "${task.nome}"
+Prazo Original: ${task.prazoOrig}
+Complexidade (3 a 9): ${task.complexidade}
+Importância (3 a 9): ${task.is}
+Estresse/Ansiedade gerada (0 a 10): ${task.pe}
+Evento Fixo inegociável: ${task.eventoFixo ? 'Sim' : 'Não'}
+Score de Urgência Interno: ${task.score.toFixed(1)}
+
+Regras da sua resposta:
+1. Seja direto, prático e motivador (máximo 3 frases).
+2. Diga se é uma tarefa fácil para matar logo ("easy win"), um "sapo para engolir" (difícil, faça logo de manhã) ou se pode ser adiada (baixa prioridade).
+3. Considere o nível de estresse (se for alto, recomende não enrolar para aliviar a ansiedade).`;
+
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { temperature: 0.7, maxOutputTokens: 200 }
+                })
+            });
+
+            if (!res.ok) throw new Error("Erro na API. Verifique se a sua API Key é válida.");
+            
+            const data = await res.json();
+            let textoIA = data.candidates[0].content.parts[0].text;
+            
+            // Troca **texto** por <strong>texto</strong> para ficar negrito no HTML
+            textoIA = textoIA.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            responseBox.innerHTML = `
+                <div style="margin-bottom: 10px; font-weight: 600; color: var(--text-main); font-size: 1.05rem;">
+                    Alvo: ${task.nome}
+                </div>
+                ${textoIA}
+            `;
+        } catch (error) {
+            responseBox.innerHTML = `<span style="color: var(--danger);">⚠️ Erro de conexão com a IA: ${error.message}</span>`;
+        }
+    }
+
+    window.onload = () => { aplicarTema(); atualizarBotaoOrdem(); salvarERenderizar(); };
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(reg => { reg.onupdatefound = () => { const inst = reg.installing; inst.onstatechange = () => { if (inst.state === 'installed' && navigator.serviceWorker.controller) window.location.reload(); }; }; }); }); }
 </script>
 </body>
 </html>
